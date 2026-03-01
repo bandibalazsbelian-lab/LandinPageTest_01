@@ -58,11 +58,11 @@ export class SceneManager {
       const renderPass = new RenderPass(this.scene, this.camera);
       this.composer.addPass(renderPass);
 
-      // Bloom
+      // Bloom — cranked up for neon glow
       this.bloomEffect = new BloomEffect({
-        intensity: 1.0,
-        luminanceThreshold: 0.3,
-        luminanceSmoothing: 0.7,
+        intensity: 2.2,
+        luminanceThreshold: 0.12,
+        luminanceSmoothing: 0.85,
         mipmapBlur: true
       });
 
