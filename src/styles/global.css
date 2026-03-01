@@ -260,8 +260,8 @@ body {
   font-family: 'Space Grotesk', sans-serif;
   font-size: clamp(48px, 10vw, 140px);
   font-weight: 700;
-  color: var(--neon-green);
-  text-shadow: 0 0 60px rgba(0,255,136,0.5), 0 0 120px rgba(0,255,136,0.2), 0 0 200px rgba(0,255,136,0.08);
+  color: #bf5af2;
+  text-shadow: 0 0 40px rgba(191,90,242,0.7), 0 0 80px rgba(191,90,242,0.35), 0 0 160px rgba(191,90,242,0.15), 0 0 300px rgba(191,90,242,0.06);
   letter-spacing: 8px;
   opacity: 0;
   transform: translateY(30px);
@@ -269,7 +269,8 @@ body {
 .hero-subtitle {
   font-family: 'Inter', sans-serif;
   font-size: 18px;
-  color: rgba(232,234,240,0.6);
+  color: var(--neon-green);
+  text-shadow: 0 0 20px rgba(0,255,136,0.4);
   margin-top: 16px;
   opacity: 0;
   letter-spacing: 3px;
@@ -462,6 +463,11 @@ body {
 }
 
 /* === SOCIAL === */
+#section-social {
+  padding: 80px 0 60px;
+  margin-top: 40px;
+  background: linear-gradient(180deg, transparent 0%, rgba(3,7,18,0.92) 12%, rgba(3,7,18,0.98) 50%, rgba(3,7,18,0.92) 88%, transparent 100%);
+}
 .social-grid {
   display: flex;
   gap: 80px;
