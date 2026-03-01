@@ -24,12 +24,12 @@ float sdCloverLeaf(vec2 p, float angle) {
   p = vec2(c * p.x - s * p.y, s * p.x + c * p.y);
 
   // Push outward from center
-  p.y -= 0.28;
+  p.y -= 0.26;
   float r = length(p);
   float a = atan(p.y, p.x);
 
-  // Wider leaf with pointed tip
-  float shape = r - 0.32 * pow(0.5 + 0.5 * sin(a), 0.75);
+  // Wider, rounder leaf
+  float shape = r - 0.35 * pow(0.5 + 0.5 * sin(a), 0.6);
   return shape;
 }
 
@@ -38,16 +38,16 @@ float veinPattern(vec2 p, float angle) {
   float c = cos(angle);
   float s = sin(angle);
   vec2 rp = vec2(c * p.x - s * p.y, s * p.x + c * p.y);
-  rp.y -= 0.28;
+  rp.y -= 0.26;
 
-  // Central vein
+  // Central vein (stronger)
   float centralVein = abs(rp.x) * 4.0;
-  centralVein = exp(-centralVein * centralVein * 8.0);
+  centralVein = exp(-centralVein * centralVein * 5.0);
 
-  // Side veins branching from center
+  // Side veins branching from center (more visible)
   float sideAngle = atan(rp.y, rp.x);
   float sideVein = abs(sin(sideAngle * 3.0 + rp.y * 4.0));
-  sideVein = exp(-sideVein * sideVein * 6.0) * 0.5;
+  sideVein = exp(-sideVein * sideVein * 6.0) * 0.7;
 
   return centralVein + sideVein;
 }
@@ -86,11 +86,11 @@ void main() {
   veins += veinPattern(uv, 5.4978);
   veins = min(veins, 1.0) * petalMask;
 
-  // Circuit grid overlay (subtle)
-  vec2 gridUv = vUv * 10.0;
-  float gridX = smoothstep(0.46, 0.5, abs(fract(gridUv.x) - 0.5));
-  float gridY = smoothstep(0.46, 0.5, abs(fract(gridUv.y) - 0.5));
-  float circuit = max(gridX, gridY) * petalMask * 0.4;
+  // Circuit grid overlay (thicker, more visible)
+  vec2 gridUv = vUv * 8.0;
+  float gridX = smoothstep(0.44, 0.5, abs(fract(gridUv.x) - 0.5));
+  float gridY = smoothstep(0.44, 0.5, abs(fract(gridUv.y) - 0.5));
+  float circuit = max(gridX, gridY) * petalMask * 0.6;
 
   // Energy flow along veins and circuits
   float flow1 = fract(distFromCenter * 3.0 - uTime * 0.4);
@@ -102,7 +102,7 @@ void main() {
   // Circuit nodes
   vec2 nodeUv = fract(gridUv) - 0.5;
   float nodeDist = length(nodeUv);
-  float node = 1.0 - smoothstep(0.04, 0.1, nodeDist);
+  float node = 1.0 - smoothstep(0.03, 0.08, nodeDist);
   float nodePulse = sin(uTime * 2.5 + hash(floor(gridUv)) * 6.28) * 0.5 + 0.5;
 
   // Per-leaf hover glow (leaf closest to mouse brightens more)
@@ -113,11 +113,11 @@ void main() {
 
   // Combine colors
   vec3 color = petalColor * petalMask;
-  color += uCircuitColor * veins * 0.35;
-  color += uCircuitColor * circuit * 0.2;
+  color += uCircuitColor * veins * 0.55;
+  color += uCircuitColor * circuit * 0.3;
   color += uCircuitColor * flow1 * veins * (0.6 + uHover * 1.5);
   color += uCircuitColor * flow2 * circuit * (0.3 + uHover * 0.8);
-  color += uCircuitColor * node * nodePulse * petalMask * 0.7;
+  color += uCircuitColor * node * nodePulse * petalMask * 0.9;
 
   // Hover glow
   color += petalColor * uHover * 0.25 * petalMask;
@@ -128,7 +128,7 @@ void main() {
   color += uColor1 * edgeGlow * (0.6 + uHover * 0.8);
 
   // Alpha
-  float alpha = petalMask * 0.92 + circuit * 0.15 + node * nodePulse * 0.2 + edgeGlow * 0.5;
+  float alpha = petalMask * 0.95 + circuit * 0.15 + node * nodePulse * 0.2 + edgeGlow * 0.5;
   alpha = clamp(alpha, 0.0, 1.0);
 
   // Center stem dot

@@ -7,11 +7,8 @@ import { TransitionFX } from './scene/TransitionFX.js';
 import { SoundEngine } from './audio/SoundEngine.js';
 import { Logo } from './objects/Logo.js';
 import { ParticleSphere } from './objects/ParticleSphere.js';
-import { PillarCoLab } from './objects/PillarCoLab.js';
-import { PillarChallenge } from './objects/PillarChallenge.js';
-import { PillarLab } from './objects/PillarLab.js';
-import { PillarFuture } from './objects/PillarFuture.js';
-import { SocialParticles } from './objects/SocialParticles.js';
+import { TestTubeSymbol, LightningSymbol, AtomSymbol, RocketSymbol } from './ui/PillarSymbol.js';
+import { SocialAnimation } from './ui/SocialAnimation.js';
 import { CustomCursor } from './ui/CustomCursor.js';
 import { Preloader } from './ui/Preloader.js';
 import { TextAnimator } from './ui/TextAnimator.js';
@@ -25,7 +22,7 @@ gsap.registerPlugin(ScrollTrigger);
 class InnovationHubApp {
   constructor() {
     this.objects = [];
-    this.pillarObjects = {};
+    this.pillarSymbols = {};
     this.statsAnimated = false;
     this.socialAssembled = false;
     this.heroAnimated = false;
@@ -108,14 +105,11 @@ class InnovationHubApp {
     this.sceneManager.add(this.particleSphere.group);
     this.objects.push(this.particleSphere);
 
-    // Pillars (positioned in world space, shown when scrolled to)
-    this._buildPillars();
+    // Pillar canvas symbols (rendered inside HTML card slots)
+    this._buildPillarSymbols();
 
-    // Social particles
-    this.socialParticles = new SocialParticles();
-    this.socialParticles.group.position.set(0, -44, 0);
-    this.sceneManager.add(this.socialParticles.group);
-    this.objects.push(this.socialParticles);
+    // Social canvas animations (rendered inside HTML social slots)
+    this.socialAnimation = new SocialAnimation();
   }
 
   _buildAmbientParticles() {
@@ -199,21 +193,13 @@ class InnovationHubApp {
     this.sceneManager.add(this.ambientParticles);
   }
 
-  _buildPillars() {
-    const pillarDefs = [
-      { key: 'colab', Class: PillarCoLab, pos: [-3, -18, 0] },
-      { key: 'challenge', Class: PillarChallenge, pos: [3, -18, 0] },
-      { key: 'lab', Class: PillarLab, pos: [-3, -22, 0] },
-      { key: 'future', Class: PillarFuture, pos: [3, -22, 0] }
-    ];
-
-    pillarDefs.forEach(def => {
-      const pillar = new def.Class();
-      pillar.group.position.set(...def.pos);
-      this.sceneManager.add(pillar.group);
-      this.objects.push(pillar);
-      this.pillarObjects[def.key] = pillar;
-    });
+  _buildPillarSymbols() {
+    this.pillarSymbols = {
+      colab: new TestTubeSymbol('pillar-slot-colab'),
+      challenge: new LightningSymbol('pillar-slot-challenge'),
+      lab: new AtomSymbol('pillar-slot-lab'),
+      future: new RocketSymbol('pillar-slot-future')
+    };
   }
 
   _animateHero() {
@@ -265,7 +251,7 @@ class InnovationHubApp {
       this.gamification.visitSection(4);
       if (!this.socialAssembled) {
         this.socialAssembled = true;
-        this.socialParticles.assemble(2.5);
+        this.socialAnimation.assemble(2.5);
         this.soundEngine.play('particle_form');
       }
     });
@@ -310,16 +296,16 @@ class InnovationHubApp {
 
     pillarCards.forEach((card, index) => {
       const pillarKey = card.dataset.pillar;
-      const pillar = this.pillarObjects[pillarKey];
+      const symbol = this.pillarSymbols[pillarKey];
 
       card.addEventListener('mouseenter', () => {
-        if (pillar) pillar.setHover(true);
+        if (symbol) symbol.setHover(true);
         this.soundEngine.play(chimes[index]);
         this.gamification.explorePillar(pillarKey);
       });
 
       card.addEventListener('mouseleave', () => {
-        if (pillar) pillar.setHover(false);
+        if (symbol) symbol.setHover(false);
       });
     });
 
@@ -349,12 +335,12 @@ class InnovationHubApp {
     socialLinks.forEach(link => {
       const platform = link.dataset.platform;
       link.addEventListener('mouseenter', () => {
-        this.socialParticles.setHover(platform, true);
+        this.socialAnimation.setHover(platform, true);
         this.soundEngine.play(`social_${platform}`);
         this.gamification.hoverSocial(platform);
       });
       link.addEventListener('mouseleave', () => {
-        this.socialParticles.setHover(platform, false);
+        this.socialAnimation.setHover(platform, false);
       });
     });
   }
@@ -374,12 +360,6 @@ class InnovationHubApp {
     this.logo.setMouse(this.sceneManager.mouseNDC);
     this.logo.update(elapsed, delta);
     this.particleSphere.update(elapsed, delta, this.sceneManager.mouseNDC);
-    this.socialParticles.update(elapsed, delta);
-
-    // Update pillars
-    Object.values(this.pillarObjects).forEach(pillar => {
-      pillar.update(elapsed);
-    });
 
     // Update scroll controller
     if (this.scrollController) {
