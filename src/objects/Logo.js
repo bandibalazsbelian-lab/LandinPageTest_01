@@ -43,7 +43,7 @@ export class Logo {
   }
 
   _buildGlowHalo() {
-    const count = 400;
+    const count = 200;
     const positions = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     const alphas = new Float32Array(count);
@@ -120,7 +120,7 @@ export class Logo {
   }
 
   _buildCircuitParticles() {
-    const count = 120;
+    const count = 60;
     const positions = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     const alphas = new Float32Array(count);

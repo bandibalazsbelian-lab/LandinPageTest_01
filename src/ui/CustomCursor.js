@@ -64,20 +64,21 @@ export class CustomCursor {
   }
 
   _addTrailParticle(x, y) {
-    if (this.trailParticles.length > 12) return;
+    if (this.trailParticles.length > 6) return;
 
     const particle = document.createElement('div');
     particle.style.cssText = `
       position: fixed;
-      left: ${x}px;
-      top: ${y}px;
+      left: 0;
+      top: 0;
       width: 4px;
       height: 4px;
-      background: #008C8C;
+      background: #D4A843;
       border-radius: 50%;
       pointer-events: none;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 4px #008C8C;
+      will-change: transform, opacity;
+      transform: translate(${x - 2}px, ${y - 2}px);
+      box-shadow: 0 0 4px #D4A843;
     `;
     this.trailContainer.appendChild(particle);
     this.trailParticles.push(particle);
@@ -85,7 +86,7 @@ export class CustomCursor {
     gsap.to(particle, {
       opacity: 0,
       scale: 0,
-      duration: 0.6,
+      duration: 0.5,
       ease: 'power2.out',
       onComplete: () => {
         particle.remove();
@@ -96,22 +97,23 @@ export class CustomCursor {
   }
 
   _clickBurst(x, y) {
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 8; i++) {
       const particle = document.createElement('div');
-      const angle = (i / 12) * Math.PI * 2;
+      const angle = (i / 8) * Math.PI * 2;
       const dist = 20 + Math.random() * 20;
 
       particle.style.cssText = `
         position: fixed;
-        left: ${x}px;
-        top: ${y}px;
+        left: 0;
+        top: 0;
         width: 3px;
         height: 3px;
-        background: #008C8C;
+        background: #D4A843;
         border-radius: 50%;
         pointer-events: none;
-        transform: translate(-50%, -50%);
-        box-shadow: 0 0 6px #008C8C;
+        will-change: transform, opacity;
+        transform: translate(${x - 1.5}px, ${y - 1.5}px);
+        box-shadow: 0 0 6px #D4A843;
       `;
       this.trailContainer.appendChild(particle);
 
@@ -132,10 +134,8 @@ export class CustomCursor {
     this.pos.x += (this.target.x - this.pos.x) * 0.15;
     this.pos.y += (this.target.y - this.pos.y) * 0.15;
 
-    this.dot.style.left = this.target.x + 'px';
-    this.dot.style.top = this.target.y + 'px';
-    this.ring.style.left = this.pos.x + 'px';
-    this.ring.style.top = this.pos.y + 'px';
+    this.dot.style.transform = `translate(${this.target.x - 4}px, ${this.target.y - 4}px)`;
+    this.ring.style.transform = `translate(${this.pos.x - 16}px, ${this.pos.y - 16}px)`;
   }
 
   dispose() {

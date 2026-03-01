@@ -100,7 +100,7 @@ class InnovationHubApp {
     this.objects.push(this.logo);
 
     // Hero: Particle Sphere
-    this.particleSphere = new ParticleSphere(2500, 14);
+    this.particleSphere = new ParticleSphere(1200, 14);
     this.particleSphere.group.position.set(0, 0, -5);
     this.sceneManager.add(this.particleSphere.group);
     this.objects.push(this.particleSphere);
@@ -113,7 +113,7 @@ class InnovationHubApp {
   }
 
   _buildAmbientParticles() {
-    const count = 350;
+    const count = 200;
     const positions = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     const alphas = new Float32Array(count);
