@@ -13,14 +13,14 @@ export class Preloader {
 
   async start() {
     const lines = [
-      '> Establishing quantum link...',
-      '> Loading neural interfaces...',
-      '> Calibrating innovation matrices...',
-      '> Initializing particle systems...',
-      '> Compiling shader programs...',
-      '> Syncing collaborative networks...',
-      '> Activating FutureWatch sensors...',
-      '> Boot sequence complete.'
+      '> Kvantum kapcsolat létrehozása...',
+      '> Neurális interfészek betöltése...',
+      '> Innovációs mátrixok kalibrálása...',
+      '> Részecske rendszerek inicializálása...',
+      '> Shader programok fordítása...',
+      '> Kollaboratív hálózatok szinkronizálása...',
+      '> FutureWatch szenzorok aktiválása...',
+      '> Rendszerindítás kész.'
     ];
 
     // Type out boot lines
@@ -30,7 +30,7 @@ export class Preloader {
       await this._wait(100 + Math.random() * 200);
     }
 
-    this.bootText.textContent = 'SYSTEM READY';
+    this.bootText.textContent = 'RENDSZER KÉSZ';
     await this._wait(400);
 
     // Complete
@@ -51,7 +51,7 @@ export class Preloader {
   async _typeLine(text, speed) {
     return new Promise(resolve => {
       const line = document.createElement('div');
-      line.style.color = '#00ff88';
+      line.style.color = '#bf5af2';
       this.bootLines.appendChild(line);
 
       let i = 0;

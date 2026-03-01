@@ -68,7 +68,7 @@ export class Gamification {
         lab: 'InnoLab',
         future: 'FutureWatch'
       };
-      this.showToast(`${displayNames[name] || name} Discovered!`);
+      this.showToast(`${displayNames[name] || name} Felfedezve!`);
 
       if (this.soundEngine) {
         this.soundEngine.play('achievement_ding');

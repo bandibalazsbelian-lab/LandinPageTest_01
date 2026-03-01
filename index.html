@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hu">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>InnovationHub — Where Ideas Become Reality</title>
-  <meta name="description" content="InnovationHub by Szerencsejáték Zrt. — A digital experience exploring innovation, collaboration, and the future." />
+  <title>InnovationHub — Ahol az ötletek valósággá válnak</title>
+  <meta name="description" content="InnovationHub a Szerencsejáték Zrt. által — Digitális élmény az innováció, az együttműködés és a jövő felfedezéséhez." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -16,7 +16,7 @@
     <div class="boot-container">
       <div class="boot-lines" id="boot-lines"></div>
       <div class="boot-status">
-        <span id="boot-text">INITIALIZING INNOVATIONHUB...</span>
+        <span id="boot-text">INNOVATIONHUB INICIALIZÁLÁS...</span>
         <span id="boot-cursor" class="blink">_</span>
       </div>
       <div class="progress-track">
@@ -27,12 +27,12 @@
   </div>
 
   <!-- Sound Toggle -->
-  <button id="sound-toggle" class="sound-toggle" aria-label="Toggle sound">
-    <svg id="sound-on-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5">
+  <button id="sound-toggle" class="sound-toggle" aria-label="Hang ki/be">
+    <svg id="sound-on-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#bf5af2" stroke-width="1.5">
       <path d="M11 5L6 9H2v6h4l5 4V5z"/>
       <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.08"/>
     </svg>
-    <svg id="sound-off-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" style="display:none">
+    <svg id="sound-off-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#bf5af2" stroke-width="1.5" style="display:none">
       <path d="M11 5L6 9H2v6h4l5 4V5z"/>
       <line x1="23" y1="9" x2="17" y2="15"/>
       <line x1="17" y1="9" x2="23" y2="15"/>
@@ -41,11 +41,11 @@
 
   <!-- Explorer Progress -->
   <div id="explorer-progress" class="explorer-progress" style="opacity:0">
-    <div class="explorer-label">EXPLORER PROGRESS</div>
+    <div class="explorer-label">FELFEDEZÉS</div>
     <div class="explorer-track">
       <div class="explorer-fill" id="explorer-fill"></div>
     </div>
-    <div class="explorer-badge" id="explorer-badge" style="display:none">FULL EXPLORER</div>
+    <div class="explorer-badge" id="explorer-badge" style="display:none">TELJES FELFEDEZŐ</div>
   </div>
 
   <!-- Custom Cursor -->
@@ -63,8 +63,8 @@
         <div id="hero-title" class="hero-title">INNOVATION HUB</div>
         <div id="hero-subtitle" class="hero-subtitle">Powered by Szerencsejáték Zrt.</div>
         <div class="scroll-indicator" id="scroll-indicator">
-          <span>EXPLORE</span>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2">
+          <span>FELFEDEZÉS</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#bf5af2" stroke-width="2">
             <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
           </svg>
         </div>
@@ -74,42 +74,42 @@
     <!-- Section 1: Mission -->
     <section id="section-mission" class="section" data-section="1">
       <div class="glass-panel mission-panel">
-        <h2 class="section-headline cyan-glow" id="mission-headline">WHERE IDEAS BECOME REALITY</h2>
+        <h2 class="section-headline purple-glow" id="mission-headline">AHOL AZ ÖTLETEK VALÓSÁGGÁ VÁLNAK</h2>
         <p class="section-body" id="mission-body">
-          InnovationHub is the creative engine of Szerencsejáték Zrt., where bold ideas are nurtured from spark to reality.
-          We bring together diverse minds, cutting-edge technology, and a fearless approach to reimagining what's possible
-          in entertainment, gaming, and beyond.
+          Az InnovationHub a Szerencsejáték Zrt. kreatív motorja, ahol a merész ötletek a szikrától a megvalósulásig jutnak el.
+          Sokszínű gondolkodókat, élvonalbeli technológiát és bátor megközelítést hozunk össze, hogy újragondoljuk
+          a szórakoztatás, a játék és azon túli lehetőségeket.
         </p>
       </div>
     </section>
 
     <!-- Section 2: Pillars -->
     <section id="section-pillars" class="section" data-section="2">
-      <h2 class="section-headline green-glow pillars-title" id="pillars-headline">THE FOUR PILLARS</h2>
+      <h2 class="section-headline purple-glow pillars-title" id="pillars-headline">A NÉGY PILLÉR</h2>
       <div class="pillars-grid" id="pillars-grid">
         <div class="pillar-card" data-pillar="colab">
           <div class="pillar-3d-slot" id="pillar-slot-colab"></div>
-          <h3 class="pillar-name cyan-glow">CoLabMűhely</h3>
-          <p class="pillar-desc">Collaborative workshops where cross-functional teams solve tomorrow's challenges together.</p>
-          <div class="pillar-badge" id="badge-colab">EXPLORED</div>
+          <h3 class="pillar-name purple-glow">CoLabMűhely</h3>
+          <p class="pillar-desc">Együttműködő műhelyek, ahol a cross-funkcionális csapatok közösen oldják meg a holnap kihívásait.</p>
+          <div class="pillar-badge" id="badge-colab">FELFEDEZVE</div>
         </div>
         <div class="pillar-card" data-pillar="challenge">
           <div class="pillar-3d-slot" id="pillar-slot-challenge"></div>
           <h3 class="pillar-name gold-glow">InnoChallenge</h3>
-          <p class="pillar-desc">Competitive innovation sprints that turn ambitious ideas into tangible prototypes.</p>
-          <div class="pillar-badge" id="badge-challenge">EXPLORED</div>
+          <p class="pillar-desc">Versenyszerű innovációs sprintek, amelyek az ambiciózus ötleteket kézzelfogható prototípusokká alakítják.</p>
+          <div class="pillar-badge" id="badge-challenge">FELFEDEZVE</div>
         </div>
         <div class="pillar-card" data-pillar="lab">
           <div class="pillar-3d-slot" id="pillar-slot-lab"></div>
-          <h3 class="pillar-name green-glow">InnoLab</h3>
-          <p class="pillar-desc">Our experimental playground where emerging technologies are tested, broken, and perfected.</p>
-          <div class="pillar-badge" id="badge-lab">EXPLORED</div>
+          <h3 class="pillar-name purple-glow">InnoLab</h3>
+          <p class="pillar-desc">A kísérleti játszóterünk, ahol az új technológiákat teszteljük, fejlesztjük és tökéletesítjük.</p>
+          <div class="pillar-badge" id="badge-lab">FELFEDEZVE</div>
         </div>
         <div class="pillar-card" data-pillar="future">
           <div class="pillar-3d-slot" id="pillar-slot-future"></div>
           <h3 class="pillar-name magenta-glow">FutureWatch</h3>
-          <p class="pillar-desc">Scanning the horizon for trends, technologies, and opportunities that will shape our industry.</p>
-          <div class="pillar-badge" id="badge-future">EXPLORED</div>
+          <p class="pillar-desc">A horizont pásztázása trendek, technológiák és lehetőségek után, amelyek az iparágunkat formálják.</p>
+          <div class="pillar-badge" id="badge-future">FELFEDEZVE</div>
         </div>
       </div>
     </section>
@@ -119,26 +119,26 @@
       <div class="stats-grid" id="stats-grid">
         <div class="stat-hex" data-stat="ideas">
           <div class="stat-number" id="stat-ideas">0</div>
-          <div class="stat-label">IDEAS SUBMITTED</div>
+          <div class="stat-label">BEKÜLDÖTT ÖTLET</div>
         </div>
         <div class="stat-hex" data-stat="challenges">
           <div class="stat-number" id="stat-challenges">0</div>
-          <div class="stat-label">CHALLENGES COMPLETED</div>
+          <div class="stat-label">TELJESÍTETT KIHÍVÁS</div>
         </div>
         <div class="stat-hex" data-stat="members">
           <div class="stat-number" id="stat-members">0</div>
-          <div class="stat-label">TEAM MEMBERS ENGAGED</div>
+          <div class="stat-label">AKTÍV CSAPATTAG</div>
         </div>
         <div class="stat-hex" data-stat="launched">
           <div class="stat-number" id="stat-launched">0</div>
-          <div class="stat-label">INNOVATIONS LAUNCHED</div>
+          <div class="stat-label">ELINDÍTOTT INNOVÁCIÓ</div>
         </div>
       </div>
     </section>
 
     <!-- Section 4: Social -->
     <section id="section-social" class="section" data-section="4">
-      <h2 class="section-headline green-glow" id="social-headline">JOIN THE MOVEMENT</h2>
+      <h2 class="section-headline gold-glow" id="social-headline">CSATLAKOZZ A MOZGALOMHOZ</h2>
       <div class="social-grid" id="social-grid">
         <a href="https://twitch.tv" target="_blank" rel="noopener" class="social-link" data-platform="twitch">
           <div class="social-3d-slot" id="social-slot-twitch"></div>

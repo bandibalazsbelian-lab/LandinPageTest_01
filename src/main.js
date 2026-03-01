@@ -86,7 +86,7 @@ class InnovationHubApp {
       this._animate();
     }
 
-    console.log('%c[InnovationHub] System online. Welcome to the future.', 'color: #00ff88; font-weight: bold;');
+    console.log('%c[InnovationHub] Rendszer online. Üdvözöljük a jövőben.', 'color: #bf5af2; font-weight: bold;');
   }
 
   _buildScene() {
@@ -119,19 +119,20 @@ class InnovationHubApp {
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
-    const green = new THREE.Color(0x00ff88);
-    const cyan = new THREE.Color(0x00e5ff);
+    const purple = new THREE.Color(0xbf5af2);
+    const gold = new THREE.Color(0xffd700);
     const magenta = new THREE.Color(0xff00aa);
+    const white = new THREE.Color(0xe8eaf0);
 
     for (let i = 0; i < count; i++) {
       positions[i * 3] = (Math.random() - 0.5) * 60;
       positions[i * 3 + 1] = (Math.random() - 0.5) * 80 - 20;
       positions[i * 3 + 2] = (Math.random() - 0.5) * 40;
       sizes[i] = Math.random() * 2.5 + 0.5;
-      alphas[i] = Math.random() * 0.2 + 0.04;
+      alphas[i] = Math.random() * 0.25 + 0.05;
 
       const rnd = Math.random();
-      const c = rnd > 0.7 ? green : rnd > 0.15 ? cyan : magenta;
+      const c = rnd > 0.6 ? purple : rnd > 0.3 ? gold : rnd > 0.1 ? magenta : white;
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
@@ -153,18 +154,25 @@ class InnovationHubApp {
         uniform float uPixelRatio;
         uniform float uTime;
         uniform vec2 uMouse;
+        uniform float uScrollVel;
         void main() {
           vAlpha = aAlpha;
           vColor = aColor;
           vec3 pos = position;
-          pos.x += sin(uTime * 0.1 + position.y * 0.1) * 0.5;
-          pos.y += cos(uTime * 0.08 + position.x * 0.1) * 0.3;
+          // Base organic motion (amplified by scroll)
+          float scrollAmp = 1.0 + uScrollVel * 0.3;
+          pos.x += sin(uTime * 0.15 * scrollAmp + position.y * 0.1) * 0.7;
+          pos.y += cos(uTime * 0.12 * scrollAmp + position.x * 0.1) * 0.5;
+          pos.z += sin(uTime * 0.08 + position.x * 0.05 + position.y * 0.05) * 0.3;
           // Mouse repulsion (subtle)
           float mouseInfluence = 1.0 / (1.0 + length(pos.xy - uMouse * 15.0));
           pos.x += (pos.x - uMouse.x * 15.0) * mouseInfluence * 0.3;
           pos.y += (pos.y - uMouse.y * 15.0) * mouseInfluence * 0.15;
+          // Scroll turbulence burst
+          pos.x += sin(pos.y * 0.3 + uTime * 2.0) * uScrollVel * 0.05;
+          pos.y += cos(pos.x * 0.3 + uTime * 2.0) * uScrollVel * 0.05;
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-          gl_PointSize = aSize * uPixelRatio * (200.0 / -mvPosition.z);
+          gl_PointSize = aSize * uPixelRatio * (200.0 / -mvPosition.z) * (1.0 + uScrollVel * 0.05);
           gl_PointSize = max(gl_PointSize, 0.5);
           gl_Position = projectionMatrix * mvPosition;
         }
@@ -182,7 +190,8 @@ class InnovationHubApp {
       uniforms: {
         uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
         uTime: { value: 0 },
-        uMouse: { value: new THREE.Vector2(0, 0) }
+        uMouse: { value: new THREE.Vector2(0, 0) },
+        uScrollVel: { value: 0 }
       },
       transparent: true,
       depthWrite: false,
@@ -350,15 +359,20 @@ class InnovationHubApp {
 
     const { delta, elapsed } = this.sceneManager.update();
 
-    // Update ambient particles with mouse
+    // Get scroll velocity for reactive animations
+    const scrollVel = this.scrollController ? this.scrollController.scrollVelocity : 0;
+
+    // Update ambient particles with mouse and scroll
     if (this.ambientParticles) {
       this.ambientParticles.material.uniforms.uTime.value = elapsed;
       this.ambientParticles.material.uniforms.uMouse.value.copy(this.sceneManager.mouseNDC);
+      this.ambientParticles.material.uniforms.uScrollVel.value += (scrollVel * 0.1 - this.ambientParticles.material.uniforms.uScrollVel.value) * 0.05;
     }
 
-    // Update all 3D objects — pass mouse to logo
+    // Update all 3D objects — pass mouse and scroll to objects
     this.logo.setMouse(this.sceneManager.mouseNDC);
     this.logo.update(elapsed, delta);
+    this.particleSphere.setScrollVelocity(scrollVel);
     this.particleSphere.update(elapsed, delta, this.sceneManager.mouseNDC);
 
     // Update scroll controller

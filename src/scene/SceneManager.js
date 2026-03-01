@@ -108,13 +108,17 @@ export class SceneManager {
     const ambient = new THREE.AmbientLight(0x030712, 0.3);
     this.scene.add(ambient);
 
-    const pointLight1 = new THREE.PointLight(0x00ff88, 2, 100);
+    const pointLight1 = new THREE.PointLight(0xbf5af2, 2, 100);
     pointLight1.position.set(10, 10, 20);
     this.scene.add(pointLight1);
 
-    const pointLight2 = new THREE.PointLight(0x00e5ff, 1.5, 80);
+    const pointLight2 = new THREE.PointLight(0xffd700, 1.5, 80);
     pointLight2.position.set(-10, -5, 15);
     this.scene.add(pointLight2);
+
+    const pointLight3 = new THREE.PointLight(0xff00aa, 1, 60);
+    pointLight3.position.set(0, 5, 25);
+    this.scene.add(pointLight3);
   }
 
   _bindEvents() {

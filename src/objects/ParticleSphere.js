@@ -1,12 +1,13 @@
 import * as THREE from 'three';
 
 export class ParticleSphere {
-  constructor(count = 3000, radius = 12) {
+  constructor(count = 3000, radius = 14) {
     this.count = count;
     this.radius = radius;
     this.group = new THREE.Group();
     this._velocities = [];
     this._origins = [];
+    this.scrollVelocity = 0;
     this._build();
   }
 
@@ -16,8 +17,9 @@ export class ParticleSphere {
     const alphas = new Float32Array(this.count);
     const colors = new Float32Array(this.count * 3);
 
-    const green = new THREE.Color(0x00ff88);
-    const cyan = new THREE.Color(0x00e5ff);
+    const purple = new THREE.Color(0xbf5af2);
+    const gold = new THREE.Color(0xffd700);
+    const magenta = new THREE.Color(0xff00aa);
     const white = new THREE.Color(0xe8eaf0);
 
     for (let i = 0; i < this.count; i++) {
@@ -44,11 +46,12 @@ export class ParticleSphere {
       sizes[i] = Math.random() * 2.5 + 0.5;
       alphas[i] = Math.random() * 0.5 + 0.15;
 
-      // Color mix
+      // Color mix — purple, gold, magenta, white
       const colorChoice = Math.random();
       let c;
-      if (colorChoice < 0.6) c = green;
-      else if (colorChoice < 0.85) c = cyan;
+      if (colorChoice < 0.4) c = purple;
+      else if (colorChoice < 0.7) c = gold;
+      else if (colorChoice < 0.85) c = magenta;
       else c = white;
 
       colors[i * 3] = c.r;
@@ -71,12 +74,19 @@ export class ParticleSphere {
         varying vec3 vColor;
         uniform float uPixelRatio;
         uniform float uTime;
+        uniform float uScrollVel;
 
         void main() {
           vAlpha = aAlpha;
           vColor = aColor;
 
-          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          vec3 pos = position;
+          // Scroll-driven expansion: particles push outward when scrolling
+          float scrollPush = uScrollVel * 0.15;
+          vec3 dir = normalize(pos);
+          pos += dir * scrollPush;
+
+          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
           gl_PointSize = aSize * uPixelRatio * (200.0 / -mvPosition.z);
           gl_PointSize = max(gl_PointSize, 0.5);
           gl_Position = projectionMatrix * mvPosition;
@@ -95,7 +105,8 @@ export class ParticleSphere {
       `,
       uniforms: {
         uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
-        uTime: { value: 0 }
+        uTime: { value: 0 },
+        uScrollVel: { value: 0 }
       },
       transparent: true,
       depthWrite: false,
@@ -108,7 +119,7 @@ export class ParticleSphere {
     // Wireframe sphere outline
     const wireGeo = new THREE.IcosahedronGeometry(this.radius * 0.9, 3);
     const wireMat = new THREE.MeshBasicMaterial({
-      color: 0x00ff88,
+      color: 0xbf5af2,
       wireframe: true,
       transparent: true,
       opacity: 0.04
@@ -117,11 +128,17 @@ export class ParticleSphere {
     this.group.add(this.wireframe);
   }
 
+  setScrollVelocity(vel) {
+    this.scrollVelocity = vel;
+  }
+
   update(elapsed, delta, mouseNDC) {
     this.points.material.uniforms.uTime.value = elapsed;
+    this.points.material.uniforms.uScrollVel.value += (this.scrollVelocity - this.points.material.uniforms.uScrollVel.value) * 0.05;
 
-    // Slow rotation
-    this.group.rotation.y = elapsed * 0.05;
+    // Faster rotation when scrolling
+    const scrollBoost = 1 + this.scrollVelocity * 0.02;
+    this.group.rotation.y = elapsed * 0.05 * scrollBoost;
     this.group.rotation.x = Math.sin(elapsed * 0.03) * 0.1;
 
     // Wireframe counter-rotation
@@ -132,6 +149,7 @@ export class ParticleSphere {
 
     // Particle drift with gravitational pull back to origins
     const positions = this.points.geometry.attributes.position.array;
+    const scrollPerturbation = this.scrollVelocity * 0.0005;
     for (let i = 0; i < this.count; i++) {
       const i3 = i * 3;
       const origin = this._origins[i];
@@ -145,10 +163,10 @@ export class ParticleSphere {
       // Damping
       vel.multiplyScalar(0.995);
 
-      // Random perturbation
-      vel.x += (Math.random() - 0.5) * 0.002;
-      vel.y += (Math.random() - 0.5) * 0.002;
-      vel.z += (Math.random() - 0.5) * 0.002;
+      // Random perturbation + scroll-driven turbulence
+      vel.x += (Math.random() - 0.5) * (0.002 + scrollPerturbation);
+      vel.y += (Math.random() - 0.5) * (0.002 + scrollPerturbation);
+      vel.z += (Math.random() - 0.5) * (0.002 + scrollPerturbation);
 
       positions[i3] += vel.x;
       positions[i3 + 1] += vel.y;
