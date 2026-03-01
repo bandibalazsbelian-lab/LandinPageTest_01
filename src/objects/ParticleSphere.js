@@ -18,9 +18,9 @@ export class ParticleSphere {
     const colors = new Float32Array(this.count * 3);
 
     const primary = new THREE.Color(0x008C8C);
-    const secondary = new THREE.Color(0xD4A843);
-    const accent = new THREE.Color(0xE8725A);
-    const white = new THREE.Color(0xFAF3E8);
+    const secondary = new THREE.Color(0xE8725A);
+    const accent = new THREE.Color(0xD4A843);
+    const white = new THREE.Color(0xe8eaf0);
 
     for (let i = 0; i < this.count; i++) {
       // Fibonacci sphere distribution

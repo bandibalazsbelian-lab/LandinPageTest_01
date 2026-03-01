@@ -25,7 +25,7 @@ export class Logo {
         uMouse: { value: new THREE.Vector2(0, 0) },
         uColor1: { value: new THREE.Color(0x008C8C) },
         uColor2: { value: new THREE.Color(0x006B6B) },
-        uCircuitColor: { value: new THREE.Color(0xD4A843) }
+        uCircuitColor: { value: new THREE.Color(0xE8725A) }
       },
       transparent: true,
       side: THREE.DoubleSide,
@@ -43,15 +43,15 @@ export class Logo {
   }
 
   _buildGlowHalo() {
-    const count = 200;
+    const count = 400;
     const positions = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
     const primary = new THREE.Color(0x008C8C);
-    const secondary = new THREE.Color(0xD4A843);
-    const accent = new THREE.Color(0xE8725A);
+    const secondary = new THREE.Color(0xE8725A);
+    const accent = new THREE.Color(0xD4A843);
 
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
@@ -120,13 +120,13 @@ export class Logo {
   }
 
   _buildCircuitParticles() {
-    const count = 60;
+    const count = 120;
     const positions = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
-    const secondary = new THREE.Color(0xD4A843);
+    const secondary = new THREE.Color(0xE8725A);
     const primary = new THREE.Color(0x008C8C);
 
     this._circuitPaths = [];

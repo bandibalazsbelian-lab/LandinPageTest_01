@@ -73,12 +73,12 @@ export class CustomCursor {
       top: 0;
       width: 4px;
       height: 4px;
-      background: #D4A843;
+      background: #008C8C;
       border-radius: 50%;
       pointer-events: none;
       will-change: transform, opacity;
       transform: translate(${x - 2}px, ${y - 2}px);
-      box-shadow: 0 0 4px #D4A843;
+      box-shadow: 0 0 4px #008C8C;
     `;
     this.trailContainer.appendChild(particle);
     this.trailParticles.push(particle);
@@ -108,12 +108,12 @@ export class CustomCursor {
         top: 0;
         width: 3px;
         height: 3px;
-        background: #D4A843;
+        background: #008C8C;
         border-radius: 50%;
         pointer-events: none;
         will-change: transform, opacity;
         transform: translate(${x - 1.5}px, ${y - 1.5}px);
-        box-shadow: 0 0 6px #D4A843;
+        box-shadow: 0 0 6px #008C8C;
       `;
       this.trailContainer.appendChild(particle);
 

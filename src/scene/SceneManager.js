@@ -27,16 +27,16 @@ export class SceneManager {
       stencil: false
     });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.0;
-    this.renderer.setClearColor(0x1A1A2E, 1);
+    this.renderer.setClearColor(0x0A0A1A, 1);
   }
 
   _initScene() {
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x1A1A2E, 0.006);
+    this.scene.fog = new THREE.FogExp2(0x0A0A1A, 0.005);
   }
 
   _initCamera() {
@@ -105,7 +105,7 @@ export class SceneManager {
   }
 
   _initLights() {
-    const ambient = new THREE.AmbientLight(0x1A1A2E, 0.3);
+    const ambient = new THREE.AmbientLight(0x0A0A1A, 0.3);
     this.scene.add(ambient);
 
     const pointLight1 = new THREE.PointLight(0x008C8C, 2, 100);
@@ -150,47 +150,81 @@ export class SceneManager {
     }, duration * 0.3);
   }
 
-  // Update camera position based on scroll
+  // Update camera position based on scroll — cinematic zoom in/out per section
   setCameraForSection(sectionIndex, progress) {
-    // Each section has a camera zone
+    // Dramatic camera choreography: alternating zoom-in / zoom-out / dolly / arc
     const sections = [
-      { pos: new THREE.Vector3(0, 0, 30), look: new THREE.Vector3(0, 0, 0) },     // Hero
-      { pos: new THREE.Vector3(0, -2, 22), look: new THREE.Vector3(0, -2, 0) },    // Mission
-      { pos: new THREE.Vector3(0, -5, 26), look: new THREE.Vector3(0, -5, 0) },    // Pillars
-      { pos: new THREE.Vector3(0, -8, 24), look: new THREE.Vector3(0, -8, 0) },    // Stats
-      { pos: new THREE.Vector3(0, -11, 28), look: new THREE.Vector3(0, -11, 0) },  // Social
-      { pos: new THREE.Vector3(0, -14, 30), look: new THREE.Vector3(0, -14, 0) }   // Footer
+      { pos: new THREE.Vector3(0, 0, 30),   fov: 60 },   // Hero — wide establishing shot
+      { pos: new THREE.Vector3(0, -2, 18),   fov: 50 },   // Mission — zoom IN tight
+      { pos: new THREE.Vector3(2, -5, 28),   fov: 65 },   // Pillars — pull OUT + pan right
+      { pos: new THREE.Vector3(-1, -8, 20),  fov: 48 },   // Stats — zoom IN close + pan left
+      { pos: new THREE.Vector3(0, -11, 26),  fov: 58 },   // Social — medium pull out
+      { pos: new THREE.Vector3(0, -14, 32),  fov: 62 }    // Footer — wide farewell
     ];
 
     const current = sections[Math.min(sectionIndex, sections.length - 1)];
     const next = sections[Math.min(sectionIndex + 1, sections.length - 1)];
 
-    this.cameraTarget.lerpVectors(current.pos, next.pos, progress);
+    // Smooth ease curve for transitions (cubic ease in-out)
+    const t = progress < 0.5
+      ? 4 * progress * progress * progress
+      : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+    this.cameraTarget.lerpVectors(current.pos, next.pos, t);
+
+    // Animate FOV for zoom effect
+    const targetFov = current.fov + (next.fov - current.fov) * t;
+    this.camera.fov += (targetFov - this.camera.fov) * 0.12;
+    this.camera.updateProjectionMatrix();
+  }
+
+  // Feed scroll velocity for reactive post-processing
+  setScrollVelocity(vel) {
+    this._scrollVelocity = vel;
   }
 
   update() {
     const delta = this.clock.getDelta();
     const elapsed = this.clock.getElapsedTime();
+    const scrollVel = this._scrollVelocity || 0;
 
-    // Smooth camera
-    this.camera.position.lerp(this.cameraTarget, 0.05);
+    // Smooth camera — slightly faster lerp for snappier feel
+    this.camera.position.lerp(this.cameraTarget, 0.065);
 
-    // Subtle camera sway from mouse
-    const swayX = this.mouseNDC.x * 0.3;
-    const swayY = this.mouseNDC.y * 0.15;
-    this.camera.position.x += (swayX - this.camera.position.x) * 0.02;
-    this.camera.position.y += (swayY + this.cameraTarget.y - this.camera.position.y) * 0.02;
+    // Parallax camera sway from mouse (amplified)
+    const swayX = this.mouseNDC.x * 0.5;
+    const swayY = this.mouseNDC.y * 0.25;
+    this.camera.position.x += (swayX + this.cameraTarget.x - this.camera.position.x) * 0.03;
+    this.camera.position.y += (swayY + this.cameraTarget.y - this.camera.position.y) * 0.03;
+
+    // Subtle breathing on Z axis
+    this.camera.position.z += Math.sin(elapsed * 0.4) * 0.003;
 
     this.camera.lookAt(
-      this.cameraTarget.x,
+      this.cameraTarget.x * 0.7,
       this.cameraTarget.y - 2,
       0
     );
 
+    // Dynamic vignette — tightens during scroll
+    if (this.vignetteEffect) {
+      const targetDarkness = 0.6 + Math.min(scrollVel * 0.003, 0.25);
+      this.vignetteEffect.darkness += (targetDarkness - this.vignetteEffect.darkness) * 0.08;
+    }
+
+    // Dynamic bloom — intensifies slightly during scroll
+    if (this.bloomEffect) {
+      const targetBloom = 1.0 + Math.min(scrollVel * 0.005, 0.6);
+      this.bloomEffect.intensity += (targetBloom - this.bloomEffect.intensity) * 0.06;
+    }
+
     // Smooth chromatic aberration
     if (this.chromaticAberration) {
+      // Scroll adds subtle chromatic push
+      const scrollChroma = Math.min(scrollVel * 0.00004, 0.006);
+      const target = this.chromaticTargetOffset + scrollChroma;
       const currentOffset = this.chromaticAberration.offset.x;
-      const newOffset = currentOffset + (this.chromaticTargetOffset - currentOffset) * 0.1;
+      const newOffset = currentOffset + (target - currentOffset) * 0.1;
       this.chromaticAberration.offset.set(newOffset, newOffset);
     }
 

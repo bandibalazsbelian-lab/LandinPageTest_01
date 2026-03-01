@@ -100,7 +100,7 @@ class InnovationHubApp {
     this.objects.push(this.logo);
 
     // Hero: Particle Sphere
-    this.particleSphere = new ParticleSphere(1200, 14);
+    this.particleSphere = new ParticleSphere(2500, 14);
     this.particleSphere.group.position.set(0, 0, -5);
     this.sceneManager.add(this.particleSphere.group);
     this.objects.push(this.particleSphere);
@@ -113,16 +113,16 @@ class InnovationHubApp {
   }
 
   _buildAmbientParticles() {
-    const count = 200;
+    const count = 350;
     const positions = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
     const primary = new THREE.Color(0x008C8C);
-    const secondary = new THREE.Color(0xD4A843);
-    const accent = new THREE.Color(0xE8725A);
-    const white = new THREE.Color(0xFAF3E8);
+    const secondary = new THREE.Color(0xE8725A);
+    const accent = new THREE.Color(0xD4A843);
+    const white = new THREE.Color(0xe8eaf0);
 
     for (let i = 0; i < count; i++) {
       positions[i * 3] = (Math.random() - 0.5) * 60;
@@ -357,10 +357,11 @@ class InnovationHubApp {
   _animate() {
     requestAnimationFrame(() => this._animate());
 
-    const { delta, elapsed } = this.sceneManager.update();
-
-    // Get scroll velocity for reactive animations
+    // Feed scroll velocity to scene manager BEFORE update for reactive post-processing
     const scrollVel = this.scrollController ? this.scrollController.scrollVelocity : 0;
+    this.sceneManager.setScrollVelocity(scrollVel);
+
+    const { delta, elapsed } = this.sceneManager.update();
 
     // Update ambient particles with mouse and scroll
     if (this.ambientParticles) {
