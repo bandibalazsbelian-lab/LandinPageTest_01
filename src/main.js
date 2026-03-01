@@ -119,10 +119,10 @@ class InnovationHubApp {
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
-    const teal = new THREE.Color(0x008C8C);
-    const tealLight = new THREE.Color(0x00B3B3);
-    const tealBright = new THREE.Color(0x00D4D4);
-    const white = new THREE.Color(0xe8eaf0);
+    const primary = new THREE.Color(0x008C8C);
+    const secondary = new THREE.Color(0xD4A843);
+    const accent = new THREE.Color(0xE8725A);
+    const white = new THREE.Color(0xFAF3E8);
 
     for (let i = 0; i < count; i++) {
       positions[i * 3] = (Math.random() - 0.5) * 60;
@@ -132,7 +132,7 @@ class InnovationHubApp {
       alphas[i] = Math.random() * 0.25 + 0.05;
 
       const rnd = Math.random();
-      const c = rnd > 0.6 ? teal : rnd > 0.3 ? tealLight : rnd > 0.1 ? tealBright : white;
+      const c = rnd > 0.6 ? primary : rnd > 0.3 ? secondary : rnd > 0.1 ? accent : white;
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;

@@ -25,7 +25,7 @@ export class Logo {
         uMouse: { value: new THREE.Vector2(0, 0) },
         uColor1: { value: new THREE.Color(0x008C8C) },
         uColor2: { value: new THREE.Color(0x006B6B) },
-        uCircuitColor: { value: new THREE.Color(0x00D4D4) }
+        uCircuitColor: { value: new THREE.Color(0xD4A843) }
       },
       transparent: true,
       side: THREE.DoubleSide,
@@ -49,9 +49,9 @@ export class Logo {
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
-    const teal = new THREE.Color(0x008C8C);
-    const tealLight = new THREE.Color(0x00B3B3);
-    const tealBright = new THREE.Color(0x00D4D4);
+    const primary = new THREE.Color(0x008C8C);
+    const secondary = new THREE.Color(0xD4A843);
+    const accent = new THREE.Color(0xE8725A);
 
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
@@ -63,7 +63,7 @@ export class Logo {
       alphas[i] = Math.random() * 0.35 + 0.08;
 
       const rnd = Math.random();
-      const c = rnd > 0.55 ? teal : rnd > 0.2 ? tealLight : tealBright;
+      const c = rnd > 0.55 ? primary : rnd > 0.2 ? secondary : accent;
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
@@ -126,8 +126,8 @@ export class Logo {
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
-    const tealBright = new THREE.Color(0x00D4D4);
-    const teal = new THREE.Color(0x008C8C);
+    const secondary = new THREE.Color(0xD4A843);
+    const primary = new THREE.Color(0x008C8C);
 
     this._circuitPaths = [];
 
@@ -146,7 +146,7 @@ export class Logo {
       sizes[i] = Math.random() * 2.5 + 1.0;
       alphas[i] = Math.random() * 0.6 + 0.2;
 
-      const c = Math.random() > 0.3 ? tealBright : teal;
+      const c = Math.random() > 0.3 ? secondary : primary;
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;

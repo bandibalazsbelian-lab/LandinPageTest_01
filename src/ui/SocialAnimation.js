@@ -39,9 +39,9 @@ const SHAPES = {
 };
 
 const COLORS = {
-  twitch:  { base: [0, 140, 140], hover: [0, 212, 212] },
-  discord: { base: [0, 140, 140], hover: [0, 212, 212] },
-  x:       { base: [0, 140, 140], hover: [0, 212, 212] }
+  twitch:  { base: [0, 140, 140], hover: [232, 114, 90] },
+  discord: { base: [0, 140, 140], hover: [232, 114, 90] },
+  x:       { base: [0, 140, 140], hover: [232, 114, 90] }
 };
 
 /* ─── SocialIcon: canvas particle icon for one platform ─── */

@@ -17,10 +17,10 @@ export class ParticleSphere {
     const alphas = new Float32Array(this.count);
     const colors = new Float32Array(this.count * 3);
 
-    const teal = new THREE.Color(0x008C8C);
-    const tealLight = new THREE.Color(0x00B3B3);
-    const tealBright = new THREE.Color(0x00D4D4);
-    const white = new THREE.Color(0xe8eaf0);
+    const primary = new THREE.Color(0x008C8C);
+    const secondary = new THREE.Color(0xD4A843);
+    const accent = new THREE.Color(0xE8725A);
+    const white = new THREE.Color(0xFAF3E8);
 
     for (let i = 0; i < this.count; i++) {
       // Fibonacci sphere distribution
@@ -46,12 +46,12 @@ export class ParticleSphere {
       sizes[i] = Math.random() * 2.5 + 0.5;
       alphas[i] = Math.random() * 0.5 + 0.15;
 
-      // Color mix — teal shades
+      // Color mix — primary palette
       const colorChoice = Math.random();
       let c;
-      if (colorChoice < 0.4) c = teal;
-      else if (colorChoice < 0.7) c = tealLight;
-      else if (colorChoice < 0.85) c = tealBright;
+      if (colorChoice < 0.4) c = primary;
+      else if (colorChoice < 0.7) c = secondary;
+      else if (colorChoice < 0.85) c = accent;
       else c = white;
 
       colors[i * 3] = c.r;
@@ -119,7 +119,7 @@ export class ParticleSphere {
     // Wireframe sphere outline
     const wireGeo = new THREE.IcosahedronGeometry(this.radius * 0.9, 3);
     const wireMat = new THREE.MeshBasicMaterial({
-      color: 0x008C8C,
+      color: 0x008C8C, // primary wireframe
       wireframe: true,
       transparent: true,
       opacity: 0.04

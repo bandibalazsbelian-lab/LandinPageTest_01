@@ -31,12 +31,12 @@ export class SceneManager {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.0;
-    this.renderer.setClearColor(0x030712, 1);
+    this.renderer.setClearColor(0x1A1A2E, 1);
   }
 
   _initScene() {
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x030712, 0.006);
+    this.scene.fog = new THREE.FogExp2(0x1A1A2E, 0.006);
   }
 
   _initCamera() {
@@ -105,18 +105,18 @@ export class SceneManager {
   }
 
   _initLights() {
-    const ambient = new THREE.AmbientLight(0x030712, 0.3);
+    const ambient = new THREE.AmbientLight(0x1A1A2E, 0.3);
     this.scene.add(ambient);
 
     const pointLight1 = new THREE.PointLight(0x008C8C, 2, 100);
     pointLight1.position.set(10, 10, 20);
     this.scene.add(pointLight1);
 
-    const pointLight2 = new THREE.PointLight(0x00B3B3, 1.5, 80);
+    const pointLight2 = new THREE.PointLight(0xD4A843, 1.5, 80);
     pointLight2.position.set(-10, -5, 15);
     this.scene.add(pointLight2);
 
-    const pointLight3 = new THREE.PointLight(0x00D4D4, 1, 60);
+    const pointLight3 = new THREE.PointLight(0xE8725A, 1, 60);
     pointLight3.position.set(0, 5, 25);
     this.scene.add(pointLight3);
   }
