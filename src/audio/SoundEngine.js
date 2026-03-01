@@ -1,4 +1,5 @@
 // Pure Web Audio API sound synthesis — zero external audio files
+// Soft, ambient aesthetic — no harsh transients
 export class SoundEngine {
   constructor() {
     this.ctx = null;
@@ -48,22 +49,22 @@ export class SoundEngine {
     return !this.muted;
   }
 
-  // === AMBIENT PAD ===
+  // === AMBIENT PAD (one octave lower, warmer) ===
   startAmbient() {
     if (!this.initialized || this.ambientOsc) return;
     const ctx = this.ctx;
 
-    // Warm C major chord drone
-    const notes = [130.81, 164.81, 196.00, 261.63]; // C3, E3, G3, C4
+    // Deep C major drone (C2-C3 range)
+    const notes = [65.41, 82.41, 98.00, 130.81]; // C2, E2, G2, C3
     this.ambientGain = ctx.createGain();
     this.ambientGain.gain.value = 0;
     this.ambientGain.connect(this.masterGain);
 
-    // LPF for warmth
+    // Lower LPF for deeper warmth
     const filter = ctx.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.value = 800;
-    filter.Q.value = 0.5;
+    filter.frequency.value = 400;
+    filter.Q.value = 0.4;
     filter.connect(this.ambientGain);
 
     this.ambientOscs = notes.map(freq => {
@@ -71,15 +72,15 @@ export class SoundEngine {
       osc.type = 'sine';
       osc.frequency.value = freq;
       const g = ctx.createGain();
-      g.gain.value = 0.04;
+      g.gain.value = 0.03;
       osc.connect(g);
       g.connect(filter);
       osc.start();
       return { osc, gain: g };
     });
 
-    // Fade in
-    this.ambientGain.gain.setTargetAtTime(0.15, ctx.currentTime, 2);
+    // Slow fade in
+    this.ambientGain.gain.setTargetAtTime(0.12, ctx.currentTime, 3);
     this.ambientOsc = true;
   }
 
@@ -98,8 +99,8 @@ export class SoundEngine {
     }, 2000);
   }
 
-  // === SOUND LIBRARY ===
-  play(sound, options = {}) {
+  // === SOUND LIBRARY (softer, lower frequencies) ===
+  play(sound) {
     if (!this.initialized || this.muted) return;
     this.resume();
 
@@ -108,79 +109,78 @@ export class SoundEngine {
 
     switch (sound) {
       case 'hover_blip':
-        this._playTone(880, 0.05, 0.08, 'sine', freq => {
-          // Quick sweep 440 -> 880
-          return (osc) => {
-            osc.frequency.setValueAtTime(440, now);
-            osc.frequency.exponentialRampToValueAtTime(880, now + 0.04);
-          };
-        });
+        // Soft sweep 200 → 400 Hz, longer duration
+        this._playSoftTone(200, 400, 0.15, 0.06);
         break;
 
       case 'click_confirm':
-        this._playPercussive(1200, 0.1, 0.12);
+        // Softer percussive at 600 Hz
+        this._playSoftPercussive(600, 0.15, 0.08);
         break;
 
       case 'transition_whoosh':
-        this._playNoiseSweep(0.6, 0.15);
+        this._playNoiseSweep(0.8, 0.1);
         break;
 
-      case 'pillar_chime_1': // C
-        this._playBell(523.25, 0.8, 0.15);
+      case 'pillar_chime_1': // C (one octave lower)
+        this._playSoftBell(261.63, 1.2, 0.1);
         break;
       case 'pillar_chime_2': // E
-        this._playBell(659.25, 0.8, 0.15);
+        this._playSoftBell(329.63, 1.2, 0.1);
         break;
       case 'pillar_chime_3': // G
-        this._playBell(783.99, 0.8, 0.15);
+        this._playSoftBell(392.00, 1.2, 0.1);
         break;
       case 'pillar_chime_4': // B
-        this._playBell(987.77, 0.8, 0.15);
+        this._playSoftBell(493.88, 1.2, 0.1);
         break;
 
       case 'particle_form':
-        this._playRisingHarmonic(1.5, 0.1);
+        this._playRisingHarmonic(2.0, 0.07);
         break;
 
       case 'achievement_ding':
-        this._playAchievement(0.15);
+        this._playAchievement(0.1);
         break;
 
       case 'logo_harmonic':
-        this._playHarmonicChord(0.12);
+        this._playHarmonicChord(0.08);
         break;
 
       case 'social_twitch':
-        this._playBell(392, 0.4, 0.1);
+        this._playSoftBell(196, 0.6, 0.07);
         break;
       case 'social_discord':
-        this._playBell(440, 0.4, 0.1);
+        this._playSoftBell(220, 0.6, 0.07);
         break;
       case 'social_x':
-        this._playBell(523.25, 0.3, 0.1);
+        this._playSoftBell(261.63, 0.5, 0.07);
         break;
 
       case 'stat_tick':
-        this._playTone(1400, 0.03, 0.05, 'square');
+        // Much softer: sine instead of square, lower freq
+        this._playSoftTone(600, 600, 0.06, 0.03);
         break;
     }
   }
 
-  _playTone(freq, duration, volume = 0.1, type = 'sine', modFn = null) {
+  // Soft tone with attack ramp (no harsh transient)
+  _playSoftTone(startFreq, endFreq, duration, volume) {
     const ctx = this.ctx;
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
-    osc.type = type;
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(volume, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-
-    if (modFn) {
-      const mod = modFn(osc);
-      if (typeof mod === 'function') mod(osc);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(startFreq, now);
+    if (endFreq !== startFreq) {
+      osc.frequency.exponentialRampToValueAtTime(endFreq, now + duration * 0.8);
     }
+
+    // Soft attack ramp (25ms)
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(volume, now + 0.025);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
     osc.connect(gain);
     gain.connect(this.masterGain);
@@ -188,7 +188,8 @@ export class SoundEngine {
     osc.stop(now + duration + 0.01);
   }
 
-  _playPercussive(freq, duration, volume) {
+  // Softer percussive sound
+  _playSoftPercussive(freq, duration, volume) {
     const ctx = this.ctx;
     const now = ctx.currentTime;
     const osc = ctx.createOscillator();
@@ -197,12 +198,14 @@ export class SoundEngine {
 
     osc.type = 'triangle';
     osc.frequency.setValueAtTime(freq, now);
-    osc.frequency.exponentialRampToValueAtTime(200, now + duration);
+    osc.frequency.exponentialRampToValueAtTime(150, now + duration);
 
-    filter.type = 'highpass';
-    filter.frequency.value = 400;
+    filter.type = 'lowpass';
+    filter.frequency.value = 1200;
 
-    gain.gain.setValueAtTime(volume, now);
+    // Soft attack
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(volume, now + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
     osc.connect(filter);
@@ -220,7 +223,7 @@ export class SoundEngine {
     const data = buffer.getChannelData(0);
 
     for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * 0.5;
+      data[i] = (Math.random() * 2 - 1) * 0.3;
     }
 
     const source = ctx.createBufferSource();
@@ -228,12 +231,14 @@ export class SoundEngine {
 
     const filter = ctx.createBiquadFilter();
     filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(8000, now);
-    filter.frequency.exponentialRampToValueAtTime(200, now + duration);
-    filter.Q.value = 2;
+    filter.frequency.setValueAtTime(4000, now);
+    filter.frequency.exponentialRampToValueAtTime(150, now + duration);
+    filter.Q.value = 1.5;
 
     const gain = ctx.createGain();
-    gain.gain.setValueAtTime(volume, now);
+    // Soft attack
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(volume, now + 0.03);
     gain.gain.setValueAtTime(volume, now + duration * 0.1);
     gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
@@ -244,23 +249,33 @@ export class SoundEngine {
     source.stop(now + duration + 0.01);
   }
 
-  _playBell(freq, duration, volume) {
+  // Softer bell with attack ramp
+  _playSoftBell(freq, duration, volume) {
     const ctx = this.ctx;
     const now = ctx.currentTime;
 
-    // Bell = fundamental + harmonics with quick attack and slow decay
     const harmonics = [1, 2.4, 5.0, 7.3];
-    const gains = [volume, volume * 0.4, volume * 0.15, volume * 0.08];
+    const gains = [volume, volume * 0.3, volume * 0.1, volume * 0.05];
+
+    // LPF for warmth
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 2000;
+    filter.connect(this.masterGain);
 
     harmonics.forEach((h, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
       osc.frequency.value = freq * h;
-      gain.gain.setValueAtTime(gains[i], now);
+
+      // Soft 20ms attack
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(gains[i], now + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.001, now + duration * (1 - i * 0.15));
+
       osc.connect(gain);
-      gain.connect(this.masterGain);
+      gain.connect(filter);
       osc.start(now);
       osc.stop(now + duration + 0.01);
     });
@@ -269,17 +284,17 @@ export class SoundEngine {
   _playRisingHarmonic(duration, volume) {
     const ctx = this.ctx;
     const now = ctx.currentTime;
-    const notes = [261.63, 329.63, 392, 523.25];
+    const notes = [130.81, 164.81, 196, 261.63]; // One octave lower
 
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
       osc.frequency.value = freq;
-      const startTime = now + i * 0.2;
+      const startTime = now + i * 0.25;
       gain.gain.setValueAtTime(0, startTime);
-      gain.gain.linearRampToValueAtTime(volume * 0.5, startTime + 0.1);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration - i * 0.1);
+      gain.gain.linearRampToValueAtTime(volume * 0.4, startTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration - i * 0.15);
       osc.connect(gain);
       gain.connect(this.masterGain);
       osc.start(startTime);
@@ -291,38 +306,39 @@ export class SoundEngine {
     const ctx = this.ctx;
     const now = ctx.currentTime;
 
-    // Two ascending tones
-    [523.25, 783.99].forEach((freq, i) => {
+    [261.63, 392.00].forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
       osc.frequency.value = freq;
-      const t = now + i * 0.1;
-      gain.gain.setValueAtTime(volume, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+      const t = now + i * 0.12;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(volume, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
       osc.connect(gain);
       gain.connect(this.masterGain);
       osc.start(t);
-      osc.stop(t + 0.35);
+      osc.stop(t + 0.55);
     });
   }
 
   _playHarmonicChord(volume) {
     const ctx = this.ctx;
     const now = ctx.currentTime;
-    const notes = [261.63, 329.63, 392, 523.25];
+    const notes = [130.81, 164.81, 196, 261.63];
 
     notes.forEach(freq => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
       osc.frequency.value = freq;
-      gain.gain.setValueAtTime(volume * 0.4, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(volume * 0.3, now + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
       osc.connect(gain);
       gain.connect(this.masterGain);
       osc.start(now);
-      osc.stop(now + 0.85);
+      osc.stop(now + 1.25);
     });
   }
 

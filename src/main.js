@@ -119,7 +119,7 @@ class InnovationHubApp {
   }
 
   _buildAmbientParticles() {
-    const count = 250;
+    const count = 350;
     const positions = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     const alphas = new Float32Array(count);
@@ -127,15 +127,17 @@ class InnovationHubApp {
 
     const green = new THREE.Color(0x00ff88);
     const cyan = new THREE.Color(0x00e5ff);
+    const magenta = new THREE.Color(0xff00aa);
 
     for (let i = 0; i < count; i++) {
       positions[i * 3] = (Math.random() - 0.5) * 60;
       positions[i * 3 + 1] = (Math.random() - 0.5) * 80 - 20;
       positions[i * 3 + 2] = (Math.random() - 0.5) * 40;
-      sizes[i] = Math.random() * 2 + 0.5;
-      alphas[i] = Math.random() * 0.25 + 0.05;
+      sizes[i] = Math.random() * 2.5 + 0.5;
+      alphas[i] = Math.random() * 0.2 + 0.04;
 
-      const c = Math.random() > 0.6 ? green : cyan;
+      const rnd = Math.random();
+      const c = rnd > 0.7 ? green : rnd > 0.15 ? cyan : magenta;
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
@@ -156,12 +158,17 @@ class InnovationHubApp {
         varying vec3 vColor;
         uniform float uPixelRatio;
         uniform float uTime;
+        uniform vec2 uMouse;
         void main() {
           vAlpha = aAlpha;
           vColor = aColor;
           vec3 pos = position;
           pos.x += sin(uTime * 0.1 + position.y * 0.1) * 0.5;
           pos.y += cos(uTime * 0.08 + position.x * 0.1) * 0.3;
+          // Mouse repulsion (subtle)
+          float mouseInfluence = 1.0 / (1.0 + length(pos.xy - uMouse * 15.0));
+          pos.x += (pos.x - uMouse.x * 15.0) * mouseInfluence * 0.3;
+          pos.y += (pos.y - uMouse.y * 15.0) * mouseInfluence * 0.15;
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
           gl_PointSize = aSize * uPixelRatio * (200.0 / -mvPosition.z);
           gl_PointSize = max(gl_PointSize, 0.5);
@@ -174,13 +181,14 @@ class InnovationHubApp {
         void main() {
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
-          float alpha = (1.0 - smoothstep(0.1, 0.5, dist)) * vAlpha;
+          float alpha = (1.0 - smoothstep(0.05, 0.5, dist)) * vAlpha;
           gl_FragColor = vec4(vColor, alpha);
         }
       `,
       uniforms: {
         uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) },
-        uTime: { value: 0 }
+        uTime: { value: 0 },
+        uMouse: { value: new THREE.Vector2(0, 0) }
       },
       transparent: true,
       depthWrite: false,
@@ -356,12 +364,14 @@ class InnovationHubApp {
 
     const { delta, elapsed } = this.sceneManager.update();
 
-    // Update ambient particles
+    // Update ambient particles with mouse
     if (this.ambientParticles) {
       this.ambientParticles.material.uniforms.uTime.value = elapsed;
+      this.ambientParticles.material.uniforms.uMouse.value.copy(this.sceneManager.mouseNDC);
     }
 
-    // Update all 3D objects
+    // Update all 3D objects — pass mouse to logo
+    this.logo.setMouse(this.sceneManager.mouseNDC);
     this.logo.update(elapsed, delta);
     this.particleSphere.update(elapsed, delta, this.sceneManager.mouseNDC);
     this.socialParticles.update(elapsed, delta);

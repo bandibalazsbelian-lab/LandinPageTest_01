@@ -31,12 +31,12 @@ export class SceneManager {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.0;
-    this.renderer.setClearColor(0x0a0e17, 1);
+    this.renderer.setClearColor(0x030712, 1);
   }
 
   _initScene() {
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x0a0e17, 0.008);
+    this.scene.fog = new THREE.FogExp2(0x030712, 0.006);
   }
 
   _initCamera() {
@@ -60,8 +60,8 @@ export class SceneManager {
 
       // Bloom
       this.bloomEffect = new BloomEffect({
-        intensity: 0.6,
-        luminanceThreshold: 0.4,
+        intensity: 1.0,
+        luminanceThreshold: 0.3,
         luminanceSmoothing: 0.7,
         mipmapBlur: true
       });
@@ -105,7 +105,7 @@ export class SceneManager {
   }
 
   _initLights() {
-    const ambient = new THREE.AmbientLight(0x0a0e17, 0.5);
+    const ambient = new THREE.AmbientLight(0x030712, 0.3);
     this.scene.add(ambient);
 
     const pointLight1 = new THREE.PointLight(0x00ff88, 2, 100);
@@ -134,7 +134,7 @@ export class SceneManager {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h);
-    this.composer.setSize(w, h);
+    if (this.composer) this.composer.setSize(w, h);
   }
 
   // Trigger a chromatic aberration burst

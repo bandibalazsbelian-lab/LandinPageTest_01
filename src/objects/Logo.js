@@ -7,18 +7,20 @@ export class Logo {
     this.group = new THREE.Group();
     this.hover = 0;
     this.targetHover = 0;
+    this.mouseNDC = new THREE.Vector2(0, 0);
     this._build();
   }
 
   _build() {
-    // Main logo plane with SDF shader
-    const geo = new THREE.PlaneGeometry(6, 6, 1, 1);
+    // Main logo plane with SDF shader (higher segment count for parallax)
+    const geo = new THREE.PlaneGeometry(6, 6, 8, 8);
     this.material = new THREE.ShaderMaterial({
       vertexShader: logoVertShader,
       fragmentShader: logoFragShader,
       uniforms: {
         uTime: { value: 0 },
         uHover: { value: 0 },
+        uMouse: { value: new THREE.Vector2(0, 0) },
         uColor1: { value: new THREE.Color(0x00ff88) },
         uColor2: { value: new THREE.Color(0x33cc55) },
         uCircuitColor: { value: new THREE.Color(0x00e5ff) }
@@ -31,15 +33,15 @@ export class Logo {
     this.mesh = new THREE.Mesh(geo, this.material);
     this.group.add(this.mesh);
 
-    // Add particle glow halo
+    // Particle glow halo (more particles)
     this._buildGlowHalo();
 
-    // Add circuit energy particles
+    // Circuit energy particles (more particles)
     this._buildCircuitParticles();
   }
 
   _buildGlowHalo() {
-    const count = 200;
+    const count = 400;
     const positions = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     const alphas = new Float32Array(count);
@@ -50,14 +52,14 @@ export class Logo {
 
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const radius = 2.5 + Math.random() * 1.5;
+      const radius = 2.2 + Math.random() * 2.0;
       positions[i * 3] = Math.cos(angle) * radius;
       positions[i * 3 + 1] = Math.sin(angle) * radius;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
-      sizes[i] = Math.random() * 3 + 1;
-      alphas[i] = Math.random() * 0.4 + 0.1;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 0.8;
+      sizes[i] = Math.random() * 3 + 0.8;
+      alphas[i] = Math.random() * 0.35 + 0.08;
 
-      const c = Math.random() > 0.5 ? green : cyan;
+      const c = Math.random() > 0.4 ? green : cyan;
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
@@ -82,8 +84,9 @@ export class Logo {
           vAlpha = aAlpha;
           vColor = aColor;
           vec3 pos = position;
-          pos.x += sin(uTime * 0.5 + position.y * 2.0) * 0.1;
-          pos.y += cos(uTime * 0.3 + position.x * 2.0) * 0.1;
+          pos.x += sin(uTime * 0.4 + position.y * 1.8) * 0.15;
+          pos.y += cos(uTime * 0.25 + position.x * 1.8) * 0.12;
+          pos.z += sin(uTime * 0.3 + position.x * position.y) * 0.05;
           vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
           gl_PointSize = aSize * uPixelRatio * (150.0 / -mvPosition.z);
           gl_Position = projectionMatrix * mvPosition;
@@ -95,7 +98,7 @@ export class Logo {
         void main() {
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
-          float alpha = (1.0 - smoothstep(0.1, 0.5, dist)) * vAlpha;
+          float alpha = (1.0 - smoothstep(0.05, 0.5, dist)) * vAlpha;
           gl_FragColor = vec4(vColor, alpha);
         }
       `,
@@ -113,23 +116,22 @@ export class Logo {
   }
 
   _buildCircuitParticles() {
-    // Small energy particles that travel along circuit-like paths
-    const count = 60;
+    const count = 120;
     const positions = new Float32Array(count * 3);
     const sizes = new Float32Array(count);
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
     const cyan = new THREE.Color(0x00e5ff);
+    const green = new THREE.Color(0x00ff88);
 
     this._circuitPaths = [];
 
     for (let i = 0; i < count; i++) {
-      // Store path data for animation
       this._circuitPaths.push({
         angle: Math.random() * Math.PI * 2,
-        radius: 0.5 + Math.random() * 2.0,
-        speed: 0.5 + Math.random() * 1.5,
+        radius: 0.4 + Math.random() * 2.2,
+        speed: 0.4 + Math.random() * 1.8,
         offset: Math.random() * Math.PI * 2,
         axis: Math.random() > 0.5 ? 'x' : 'y'
       });
@@ -137,11 +139,13 @@ export class Logo {
       positions[i * 3] = 0;
       positions[i * 3 + 1] = 0;
       positions[i * 3 + 2] = 0.1;
-      sizes[i] = Math.random() * 2 + 1.5;
-      alphas[i] = Math.random() * 0.6 + 0.3;
-      colors[i * 3] = cyan.r;
-      colors[i * 3 + 1] = cyan.g;
-      colors[i * 3 + 2] = cyan.b;
+      sizes[i] = Math.random() * 2.5 + 1.0;
+      alphas[i] = Math.random() * 0.6 + 0.2;
+
+      const c = Math.random() > 0.3 ? cyan : green;
+      colors[i * 3] = c.r;
+      colors[i * 3 + 1] = c.g;
+      colors[i * 3 + 2] = c.b;
     }
 
     const geo = new THREE.BufferGeometry();
@@ -172,8 +176,8 @@ export class Logo {
         void main() {
           float dist = length(gl_PointCoord - vec2(0.5));
           if (dist > 0.5) discard;
-          float alpha = exp(-dist * 6.0) * vAlpha;
-          gl_FragColor = vec4(vColor * 1.5, alpha);
+          float alpha = exp(-dist * 5.0) * vAlpha;
+          gl_FragColor = vec4(vColor * 1.4, alpha);
         }
       `,
       uniforms: {
@@ -192,6 +196,10 @@ export class Logo {
     this.targetHover = value ? 1 : 0;
   }
 
+  setMouse(ndc) {
+    this.mouseNDC.copy(ndc);
+  }
+
   update(elapsed, delta) {
     // Smooth hover
     this.hover += (this.targetHover - this.hover) * 0.08;
@@ -199,23 +207,27 @@ export class Logo {
     // Update main shader
     this.material.uniforms.uTime.value = elapsed;
     this.material.uniforms.uHover.value = this.hover;
+    this.material.uniforms.uMouse.value.copy(this.mouseNDC);
 
     // Update halo
     if (this.haloParticles) {
       this.haloParticles.material.uniforms.uTime.value = elapsed;
     }
 
-    // Subtle Y rotation oscillation
-    this.group.rotation.y = Math.sin(elapsed * 0.3) * 0.035 * (1 + this.hover);
+    // 3D rotation toward mouse
+    const targetRotY = this.mouseNDC.x * 0.08 + Math.sin(elapsed * 0.3) * 0.03;
+    const targetRotX = -this.mouseNDC.y * 0.05;
+    this.group.rotation.y += (targetRotY - this.group.rotation.y) * 0.06;
+    this.group.rotation.x += (targetRotX - this.group.rotation.x) * 0.06;
 
-    // Breathing scale
-    const breathPhase = Math.sin(elapsed * 0.7) * 0.015;
-    this.group.scale.setScalar(1 + breathPhase + this.hover * 0.05);
+    // Organic breathing (dual sine)
+    const breathPhase = Math.sin(elapsed * 0.7) * 0.012 + Math.sin(elapsed * 1.1) * 0.006;
+    this.group.scale.setScalar(1 + breathPhase + this.hover * 0.06);
 
     // Update circuit energy particles
     if (this.circuitPoints) {
       const positions = this.circuitPoints.geometry.attributes.position.array;
-      const speedMult = 1 + this.hover;
+      const speedMult = 1 + this.hover * 1.5;
 
       for (let i = 0; i < this._circuitPaths.length; i++) {
         const p = this._circuitPaths[i];
@@ -228,7 +240,7 @@ export class Logo {
           positions[i * 3] = Math.sin(t * 0.7) * p.radius * 0.6;
           positions[i * 3 + 1] = Math.cos(t) * p.radius;
         }
-        positions[i * 3 + 2] = Math.sin(t * 1.3) * 0.15;
+        positions[i * 3 + 2] = Math.sin(t * 1.3) * 0.2;
       }
       this.circuitPoints.geometry.attributes.position.needsUpdate = true;
     }

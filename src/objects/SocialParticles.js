@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 // Particle-based social icons — Twitch, Discord, X
-// Particles form the shape of each icon and react to cursor
+// More alive: constant breathing, hover pulse wave, z-depth motion
 export class SocialParticles {
   constructor() {
     this.group = new THREE.Group();
@@ -11,7 +11,6 @@ export class SocialParticles {
   }
 
   _build() {
-    // Define icon shapes as simple pixel grids (16x16 approximate)
     const shapes = {
       twitch: this._getTwitchShape(),
       discord: this._getDiscordShape(),
@@ -35,12 +34,13 @@ export class SocialParticles {
       const positions = new Float32Array(count * 3);
       const targetPositions = new Float32Array(count * 3);
       const sizes = new Float32Array(count);
+      const baseSizes = new Float32Array(count);
       const alphas = new Float32Array(count);
+      const baseAlphas = new Float32Array(count);
       const colorArr = new Float32Array(count * 3);
       const defaultColor = colors[platform].default;
 
       for (let i = 0; i < count; i++) {
-        // Target position (icon shape)
         targetPositions[i * 3] = shape[i].x * 0.08 + offset;
         targetPositions[i * 3 + 1] = shape[i].y * 0.08;
         targetPositions[i * 3 + 2] = 0;
@@ -50,8 +50,12 @@ export class SocialParticles {
         positions[i * 3 + 1] = (Math.random() - 0.5) * 15;
         positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
 
-        sizes[i] = Math.random() * 2 + 1.5;
-        alphas[i] = Math.random() * 0.5 + 0.3;
+        const s = Math.random() * 2.5 + 1.5;
+        sizes[i] = s;
+        baseSizes[i] = s;
+        const a = Math.random() * 0.45 + 0.3;
+        alphas[i] = a;
+        baseAlphas[i] = a;
         colorArr[i * 3] = defaultColor.r;
         colorArr[i * 3 + 1] = defaultColor.g;
         colorArr[i * 3 + 2] = defaultColor.b;
@@ -86,8 +90,8 @@ export class SocialParticles {
           void main() {
             float dist = length(gl_PointCoord - vec2(0.5));
             if (dist > 0.5) discard;
-            float alpha = (1.0 - smoothstep(0.1, 0.5, dist)) * vAlpha;
-            float glow = exp(-dist * 4.0) * 0.4;
+            float alpha = (1.0 - smoothstep(0.05, 0.5, dist)) * vAlpha;
+            float glow = exp(-dist * 4.0) * 0.5;
             gl_FragColor = vec4(vColor + vColor * glow, alpha);
           }
         `,
@@ -110,30 +114,28 @@ export class SocialParticles {
         hover: 0,
         targetHover: 0,
         count,
-        velocities: new Float32Array(count * 3) // for Brownian motion
+        baseSizes,
+        baseAlphas,
+        velocities: new Float32Array(count * 3),
+        breathPhases: new Float32Array(count).map(() => Math.random() * Math.PI * 2)
       };
     });
   }
 
-  // Generate icon shapes as point clouds
+  // Larger grid shapes for more particles
   _getTwitchShape() {
     const points = [];
-    // Simplified Twitch logo — speech bubble shape
-    const size = 12;
+    const size = 14;
     for (let y = -size; y <= size; y++) {
       for (let x = -size; x <= size; x++) {
-        // Rounded rectangle body
         const inBody = Math.abs(x) < size * 0.7 && y > -size * 0.6 && y < size * 0.7;
-        // Top rounded
         const inTop = Math.abs(x) < size * 0.7 - Math.max(0, y - size * 0.5) * 2 && y >= size * 0.5 && y < size * 0.9;
-        // Bottom notch (speech bubble tail)
         const inTail = x > size * 0.1 && x < size * 0.5 && y >= -size * 0.9 && y < -size * 0.5;
-        // Eyes (two vertical bars)
         const isEye = (Math.abs(x - size * 0.15) < 1.5 || Math.abs(x + size * 0.2) < 1.5) &&
                       y > -size * 0.1 && y < size * 0.35;
 
         if ((inBody || inTop || inTail) && !isEye) {
-          points.push({ x: x + (Math.random() - 0.5) * 0.3, y: y + (Math.random() - 0.5) * 0.3 });
+          points.push({ x: x + (Math.random() - 0.5) * 0.4, y: y + (Math.random() - 0.5) * 0.4 });
         }
       }
     }
@@ -142,23 +144,19 @@ export class SocialParticles {
 
   _getDiscordShape() {
     const points = [];
-    const size = 12;
+    const size = 14;
     for (let y = -size; y <= size; y++) {
       for (let x = -size; x <= size; x++) {
-        // Controller/gamepad-like shape (Discord logo simplified)
         const headDist = Math.sqrt(x * x + (y - size * 0.2) * (y - size * 0.2));
         const inHead = headDist < size * 0.8;
-        // Two bumps on top (ears)
         const leftEar = Math.sqrt((x + size * 0.45) ** 2 + (y - size * 0.65) ** 2) < size * 0.3;
         const rightEar = Math.sqrt((x - size * 0.45) ** 2 + (y - size * 0.65) ** 2) < size * 0.3;
-        // Eyes
         const leftEye = Math.sqrt((x + size * 0.25) ** 2 + (y - size * 0.15) ** 2) < size * 0.15;
         const rightEye = Math.sqrt((x - size * 0.25) ** 2 + (y - size * 0.15) ** 2) < size * 0.15;
-        // Body
         const inBody = Math.abs(x) < size * 0.65 && y > -size * 0.7 && y < -size * 0.1;
 
         if ((inHead || leftEar || rightEar || inBody) && !leftEye && !rightEye) {
-          points.push({ x: x + (Math.random() - 0.5) * 0.3, y: y + (Math.random() - 0.5) * 0.3 });
+          points.push({ x: x + (Math.random() - 0.5) * 0.4, y: y + (Math.random() - 0.5) * 0.4 });
         }
       }
     }
@@ -167,20 +165,17 @@ export class SocialParticles {
 
   _getXShape() {
     const points = [];
-    const size = 10;
-    // X shape — two crossing lines
-    for (let t = -size; t <= size; t += 0.3) {
-      const thickness = 2.5;
-      for (let w = -thickness; w <= thickness; w += 0.8) {
-        // Line 1: top-left to bottom-right
+    const size = 12;
+    for (let t = -size; t <= size; t += 0.25) {
+      const thickness = 2.8;
+      for (let w = -thickness; w <= thickness; w += 0.7) {
         points.push({
-          x: t + (Math.random() - 0.5) * 0.3,
-          y: t + w + (Math.random() - 0.5) * 0.3
+          x: t + (Math.random() - 0.5) * 0.4,
+          y: t + w + (Math.random() - 0.5) * 0.4
         });
-        // Line 2: top-right to bottom-left
         points.push({
-          x: t + (Math.random() - 0.5) * 0.3,
-          y: -t + w + (Math.random() - 0.5) * 0.3
+          x: t + (Math.random() - 0.5) * 0.4,
+          y: -t + w + (Math.random() - 0.5) * 0.4
         });
       }
     }
@@ -191,10 +186,9 @@ export class SocialParticles {
     if (this.icons[platform]) {
       this.icons[platform].targetHover = value ? 1 : 0;
     }
-    // Dim others
     Object.keys(this.icons).forEach(key => {
       if (key !== platform && value) {
-        this.icons[key].targetHover = -0.3; // Dim
+        this.icons[key].targetHover = -0.3;
       } else if (!value) {
         this.icons[key].targetHover = 0;
       }
@@ -215,14 +209,14 @@ export class SocialParticles {
       const positions = icon.points.geometry.attributes.position.array;
       const colorArr = icon.points.geometry.attributes.aColor.array;
       const alphas = icon.points.geometry.attributes.aAlpha.array;
+      const sizes = icon.points.geometry.attributes.aSize.array;
       const targets = icon.targetPositions;
 
       // Assembly progress
       let assembleT = 1;
       if (this.assembled && this._assembleStart) {
-        const elapsed = performance.now() - this._assembleStart;
-        assembleT = Math.min(elapsed / this._assembleDuration, 1);
-        // Ease out elastic
+        const elapsedMs = performance.now() - this._assembleStart;
+        assembleT = Math.min(elapsedMs / this._assembleDuration, 1);
         assembleT = assembleT === 1 ? 1 : 1 - Math.pow(2, -10 * assembleT) * Math.cos((assembleT * 10 - 0.75) * (2 * Math.PI / 3));
       } else if (!this.assembled) {
         assembleT = 0;
@@ -238,25 +232,43 @@ export class SocialParticles {
         const i3 = i * 3;
 
         if (assembleT < 1) {
-          // Lerp toward target
           positions[i3] += (targets[i3] - positions[i3]) * assembleT * 0.05;
           positions[i3 + 1] += (targets[i3 + 1] - positions[i3 + 1]) * assembleT * 0.05;
           positions[i3 + 2] += (targets[i3 + 2] - positions[i3 + 2]) * assembleT * 0.05;
         } else {
-          // Brownian motion around target
-          icon.velocities[i3] += (Math.random() - 0.5) * 0.003;
-          icon.velocities[i3 + 1] += (Math.random() - 0.5) * 0.003;
-          icon.velocities[i3 + 2] += (Math.random() - 0.5) * 0.001;
+          // Brownian motion + breathing
+          const breathPhase = icon.breathPhases[i];
+          const breathX = Math.sin(elapsed * 0.8 + breathPhase) * 0.008;
+          const breathY = Math.cos(elapsed * 0.6 + breathPhase * 1.3) * 0.006;
+          const breathZ = Math.sin(elapsed * 0.5 + breathPhase * 0.7) * 0.015;
 
-          // Spring back to target
-          icon.velocities[i3] += (targets[i3] - positions[i3]) * 0.02;
-          icon.velocities[i3 + 1] += (targets[i3 + 1] - positions[i3 + 1]) * 0.02;
-          icon.velocities[i3 + 2] += (targets[i3 + 2] - positions[i3 + 2]) * 0.02;
+          icon.velocities[i3] += (Math.random() - 0.5) * 0.004 + breathX;
+          icon.velocities[i3 + 1] += (Math.random() - 0.5) * 0.004 + breathY;
+          icon.velocities[i3 + 2] += (Math.random() - 0.5) * 0.002 + breathZ;
+
+          // Spring back to target (stronger spring on hover)
+          const springK = 0.02 + hoverAmt * 0.03;
+          icon.velocities[i3] += (targets[i3] - positions[i3]) * springK;
+          icon.velocities[i3 + 1] += (targets[i3 + 1] - positions[i3 + 1]) * springK;
+          icon.velocities[i3 + 2] += (targets[i3 + 2] - positions[i3 + 2]) * springK;
+
+          // Hover: pulse outward then snap back
+          if (hoverAmt > 0.5) {
+            const pulseWave = Math.sin(elapsed * 4 + i * 0.1) * hoverAmt * 0.01;
+            const dx = positions[i3] - targets[i3];
+            const dy = positions[i3 + 1] - targets[i3 + 1];
+            const dist = Math.sqrt(dx * dx + dy * dy) + 0.001;
+            icon.velocities[i3] += (dx / dist) * pulseWave;
+            icon.velocities[i3 + 1] += (dy / dist) * pulseWave;
+          }
+
+          // Z depth breathing on hover
+          icon.velocities[i3 + 2] += Math.sin(elapsed * 3 + breathPhase) * hoverAmt * 0.005;
 
           // Damping
-          icon.velocities[i3] *= 0.95;
-          icon.velocities[i3 + 1] *= 0.95;
-          icon.velocities[i3 + 2] *= 0.95;
+          icon.velocities[i3] *= 0.94;
+          icon.velocities[i3 + 1] *= 0.94;
+          icon.velocities[i3 + 2] *= 0.94;
 
           positions[i3] += icon.velocities[i3];
           positions[i3 + 1] += icon.velocities[i3 + 1];
@@ -268,13 +280,18 @@ export class SocialParticles {
         colorArr[i3 + 1] = g;
         colorArr[i3 + 2] = b;
 
-        // Alpha — dim if hover < 0
-        alphas[i] = Math.max(0.1, 0.5 + icon.hover * 0.3);
+        // Alpha with breathing
+        const breathAlpha = Math.sin(elapsed * 1.2 + icon.breathPhases[i]) * 0.08;
+        alphas[i] = Math.max(0.1, icon.baseAlphas[i] + icon.hover * 0.25 + breathAlpha);
+
+        // Size breathing
+        sizes[i] = icon.baseSizes[i] * (1 + Math.sin(elapsed * 0.9 + icon.breathPhases[i]) * 0.1 + hoverAmt * 0.15);
       }
 
       icon.points.geometry.attributes.position.needsUpdate = true;
       icon.points.geometry.attributes.aColor.needsUpdate = true;
       icon.points.geometry.attributes.aAlpha.needsUpdate = true;
+      icon.points.geometry.attributes.aSize.needsUpdate = true;
     });
   }
 
