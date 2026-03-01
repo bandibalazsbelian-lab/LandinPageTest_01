@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { EffectComposer, EffectPass, RenderPass, BloomEffect, ChromaticAberrationEffect, VignetteEffect, NoiseEffect, BlendFunction, SMAAEffect } from 'postprocessing';
+import { EffectComposer, EffectPass, RenderPass, BloomEffect, ChromaticAberrationEffect, VignetteEffect, NoiseEffect, BlendFunction } from 'postprocessing';
 
 export class SceneManager {
   constructor(canvas) {
@@ -51,55 +51,57 @@ export class SceneManager {
   }
 
   _initPostProcessing() {
-    this.composer = new EffectComposer(this.renderer);
+    try {
+      this.composer = new EffectComposer(this.renderer);
 
-    // Render pass
-    const renderPass = new RenderPass(this.scene, this.camera);
-    this.composer.addPass(renderPass);
+      // Render pass
+      const renderPass = new RenderPass(this.scene, this.camera);
+      this.composer.addPass(renderPass);
 
-    // Bloom
-    this.bloomEffect = new BloomEffect({
-      intensity: 0.6,
-      luminanceThreshold: 0.4,
-      luminanceSmoothing: 0.7,
-      mipmapBlur: true
-    });
+      // Bloom
+      this.bloomEffect = new BloomEffect({
+        intensity: 0.6,
+        luminanceThreshold: 0.4,
+        luminanceSmoothing: 0.7,
+        mipmapBlur: true
+      });
 
-    // Chromatic Aberration
-    this.chromaticAberration = new ChromaticAberrationEffect({
-      offset: new THREE.Vector2(0.0008, 0.0008),
-      radialModulation: true,
-      modulationOffset: 0.3
-    });
-    this.chromaticBaseOffset = 0.0008;
-    this.chromaticTargetOffset = 0.0008;
+      // Chromatic Aberration
+      this.chromaticAberration = new ChromaticAberrationEffect({
+        offset: new THREE.Vector2(0.0008, 0.0008)
+      });
+      this.chromaticBaseOffset = 0.0008;
+      this.chromaticTargetOffset = 0.0008;
 
-    // Vignette
-    this.vignetteEffect = new VignetteEffect({
-      offset: 0.3,
-      darkness: 0.6
-    });
+      // Vignette
+      this.vignetteEffect = new VignetteEffect({
+        offset: 0.3,
+        darkness: 0.6
+      });
 
-    // Film Grain / Noise
-    this.noiseEffect = new NoiseEffect({
-      blendFunction: BlendFunction.OVERLAY,
-      premultiply: true
-    });
-    this.noiseEffect.blendMode.opacity.value = 0.12;
+      // Film Grain / Noise
+      this.noiseEffect = new NoiseEffect({
+        blendFunction: BlendFunction.OVERLAY
+      });
+      this.noiseEffect.blendMode.opacity.value = 0.12;
 
-    // SMAA
-    this.smaaEffect = new SMAAEffect();
+      // Combine core effects (skip SMAA — it can crash on some GPUs)
+      const effects = [
+        this.bloomEffect,
+        this.chromaticAberration,
+        this.vignetteEffect,
+        this.noiseEffect
+      ];
 
-    // Combine effects
-    const effectPass = new EffectPass(
-      this.camera,
-      this.bloomEffect,
-      this.chromaticAberration,
-      this.vignetteEffect,
-      this.noiseEffect,
-      this.smaaEffect
-    );
-    this.composer.addPass(effectPass);
+      const effectPass = new EffectPass(this.camera, ...effects);
+      this.composer.addPass(effectPass);
+
+      this.useComposer = true;
+      console.log('[SceneManager] Post-processing initialized');
+    } catch (err) {
+      console.warn('[SceneManager] Post-processing failed, using fallback renderer:', err);
+      this.useComposer = false;
+    }
   }
 
   _initLights() {
@@ -137,6 +139,7 @@ export class SceneManager {
 
   // Trigger a chromatic aberration burst
   chromaticBurst(intensity = 0.012, duration = 500) {
+    if (!this.chromaticAberration) return;
     this.chromaticTargetOffset = intensity;
     setTimeout(() => {
       this.chromaticTargetOffset = this.chromaticBaseOffset;
@@ -181,12 +184,18 @@ export class SceneManager {
     );
 
     // Smooth chromatic aberration
-    const currentOffset = this.chromaticAberration.offset.x;
-    const newOffset = currentOffset + (this.chromaticTargetOffset - currentOffset) * 0.1;
-    this.chromaticAberration.offset.set(newOffset, newOffset);
+    if (this.chromaticAberration) {
+      const currentOffset = this.chromaticAberration.offset.x;
+      const newOffset = currentOffset + (this.chromaticTargetOffset - currentOffset) * 0.1;
+      this.chromaticAberration.offset.set(newOffset, newOffset);
+    }
 
     // Render
-    this.composer.render(delta);
+    if (this.useComposer && this.composer) {
+      this.composer.render(delta);
+    } else {
+      this.renderer.render(this.scene, this.camera);
+    }
 
     return { delta, elapsed };
   }

@@ -37,8 +37,15 @@ export class Preloader {
     this.setProgress(100);
     await this._wait(300);
 
-    // Trigger complete
-    if (this.onComplete) this.onComplete();
+    // Trigger complete — await if async, catch errors to prevent hang
+    if (this.onComplete) {
+      try {
+        await this.onComplete();
+      } catch (err) {
+        console.error('[Preloader] onComplete error:', err);
+        this.hide();
+      }
+    }
   }
 
   async _typeLine(text, speed) {

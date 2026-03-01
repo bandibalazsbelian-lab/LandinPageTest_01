@@ -44,7 +44,7 @@ export class TransitionFX {
     });
 
     // Film grain burst
-    if (sm.noiseEffect) {
+    if (sm.noiseEffect && sm.noiseEffect.blendMode && sm.noiseEffect.blendMode.opacity) {
       gsap.to(sm.noiseEffect.blendMode.opacity, {
         value: 0.35,
         duration: 0.15,

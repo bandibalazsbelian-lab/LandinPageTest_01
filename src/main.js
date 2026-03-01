@@ -46,29 +46,35 @@ class InnovationHubApp {
   }
 
   async _onPreloaderComplete() {
-    // Initialize 3D scene
-    const canvas = document.getElementById('webgl-canvas');
-    this.sceneManager = new SceneManager(canvas);
-    this.transitionFX = new TransitionFX(this.sceneManager);
+    try {
+      // Initialize 3D scene
+      const canvas = document.getElementById('webgl-canvas');
+      this.sceneManager = new SceneManager(canvas);
+      this.transitionFX = new TransitionFX(this.sceneManager);
 
-    // Build 3D objects
-    this._buildScene();
+      // Build 3D objects
+      this._buildScene();
 
-    // Initialize scroll controller
-    this.scrollController = new ScrollController(this.sceneManager, this.soundEngine);
-    this._setupScrollTriggers();
+      // Initialize scroll controller
+      this.scrollController = new ScrollController(this.sceneManager, this.soundEngine);
+      this._setupScrollTriggers();
 
-    // Setup sound toggle
-    this._setupSoundToggle();
+      // Setup sound toggle
+      this._setupSoundToggle();
 
-    // Setup pillar interactions
-    this._setupPillarInteractions();
+      // Setup pillar interactions
+      this._setupPillarInteractions();
 
-    // Setup social interactions
-    this._setupSocialInteractions();
+      // Setup social interactions
+      this._setupSocialInteractions();
 
-    // Glitch transition out of preloader
-    await this.transitionFX.glitchBurst(400);
+      // Glitch transition out of preloader
+      await this.transitionFX.glitchBurst(400);
+    } catch (err) {
+      console.error('[InnovationHub] Initialization error:', err);
+    }
+
+    // Always hide preloader and start render — even if something above failed
     await this.preloader.hide();
 
     // Show UI
@@ -79,7 +85,9 @@ class InnovationHubApp {
     this._animateHero();
 
     // Start render loop
-    this._animate();
+    if (this.sceneManager) {
+      this._animate();
+    }
 
     console.log('%c[InnovationHub] System online. Welcome to the future.', 'color: #00ff88; font-weight: bold;');
   }
@@ -257,24 +265,6 @@ class InnovationHubApp {
     // Section 5: Footer
     sc.onSectionEnter(5, () => {
       this.gamification.visitSection(5);
-    });
-
-    // Scroll-based camera movement
-    ScrollTrigger.create({
-      trigger: '#scroll-container',
-      scroller: '#scroll-container',
-      start: 'top top',
-      end: 'bottom bottom',
-      onUpdate: (self) => {
-        const totalProgress = self.progress;
-        const sectionCount = 6;
-        const sectionIndex = Math.floor(totalProgress * sectionCount);
-        const sectionProgress = (totalProgress * sectionCount) % 1;
-        this.sceneManager.setCameraForSection(
-          Math.min(sectionIndex, sectionCount - 1),
-          sectionProgress
-        );
-      }
     });
   }
 
