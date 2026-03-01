@@ -51,7 +51,7 @@ export class PillarLab {
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
-    const green = new THREE.Color(0x00ff88);
+    const green = new THREE.Color(0x00B3B3);
     const radius = 0.25;
 
     // Store base alphas and sizes for animation
@@ -103,7 +103,7 @@ export class PillarLab {
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
-    const cyan = new THREE.Color(0x00e5ff);
+    const cyan = new THREE.Color(0x008C8C);
 
     // Store per-particle data for animation
     this._orbitalAngles = new Float32Array(count);   // original angle on ellipse
@@ -154,7 +154,7 @@ export class PillarLab {
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
-    const cyan = new THREE.Color(0x00e5ff);
+    const cyan = new THREE.Color(0x008C8C);
 
     // Store current angle per electron
     this._electronAngles = [0, Math.PI * 2 / 3, Math.PI * 4 / 3]; // evenly spaced start

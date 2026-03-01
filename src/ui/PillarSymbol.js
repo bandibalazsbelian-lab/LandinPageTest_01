@@ -108,7 +108,7 @@ export class TestTubeSymbol extends PillarSymbolBase {
   constructor(slotId) { super(slotId); this._start(); }
 
   _initParticles() {
-    const C = [0, 229, 255], G = [0, 255, 136], LG = [120, 255, 200];
+    const C = [0, 140, 140], G = [0, 179, 179], LG = [0, 212, 212];
     const W = 0.25, T = 0.85, B = -0.85;
 
     // Shell outline
@@ -179,7 +179,7 @@ export class LightningSymbol extends PillarSymbolBase {
   constructor(slotId) { super(slotId); this._start(); }
 
   _initParticles() {
-    const GOLD = [255, 215, 0], GRN = [0, 255, 136];
+    const GOLD = [0, 212, 212], GRN = [0, 140, 140];
     this._wp = [
       [0, 0.9], [0.2, 0.6], [-0.15, 0.3], [0.18, 0.0],
       [-0.2, -0.3], [0.12, -0.55], [-0.08, -0.8], [0.1, -0.95]
@@ -246,7 +246,7 @@ export class AtomSymbol extends PillarSymbolBase {
   constructor(slotId) { super(slotId); this._start(); }
 
   _initParticles() {
-    const G = [0, 255, 136], C = [0, 229, 255];
+    const G = [0, 179, 179], C = [0, 140, 140];
     this._rings = [
       { tilt: 0, speed: 0.3 },
       { tilt: Math.PI / 3, speed: 0.25 },
@@ -321,7 +321,7 @@ export class RocketSymbol extends PillarSymbolBase {
   constructor(slotId) { super(slotId); this._start(); }
 
   _initParticles() {
-    const MAG = [255, 0, 170], CYAN = [0, 229, 255], GOLD = [255, 215, 0];
+    const MAG = [0, 212, 212], CYAN = [0, 140, 140], GOLD = [0, 179, 179];
 
     // Nose cone
     for (let i = 0; i < 12; i++) {

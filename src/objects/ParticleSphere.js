@@ -17,9 +17,9 @@ export class ParticleSphere {
     const alphas = new Float32Array(this.count);
     const colors = new Float32Array(this.count * 3);
 
-    const purple = new THREE.Color(0xbf5af2);
-    const gold = new THREE.Color(0xffd700);
-    const magenta = new THREE.Color(0xff00aa);
+    const teal = new THREE.Color(0x008C8C);
+    const tealLight = new THREE.Color(0x00B3B3);
+    const tealBright = new THREE.Color(0x00D4D4);
     const white = new THREE.Color(0xe8eaf0);
 
     for (let i = 0; i < this.count; i++) {
@@ -46,12 +46,12 @@ export class ParticleSphere {
       sizes[i] = Math.random() * 2.5 + 0.5;
       alphas[i] = Math.random() * 0.5 + 0.15;
 
-      // Color mix — purple, gold, magenta, white
+      // Color mix — teal shades
       const colorChoice = Math.random();
       let c;
-      if (colorChoice < 0.4) c = purple;
-      else if (colorChoice < 0.7) c = gold;
-      else if (colorChoice < 0.85) c = magenta;
+      if (colorChoice < 0.4) c = teal;
+      else if (colorChoice < 0.7) c = tealLight;
+      else if (colorChoice < 0.85) c = tealBright;
       else c = white;
 
       colors[i * 3] = c.r;
@@ -119,7 +119,7 @@ export class ParticleSphere {
     // Wireframe sphere outline
     const wireGeo = new THREE.IcosahedronGeometry(this.radius * 0.9, 3);
     const wireMat = new THREE.MeshBasicMaterial({
-      color: 0xbf5af2,
+      color: 0x008C8C,
       wireframe: true,
       transparent: true,
       opacity: 0.04

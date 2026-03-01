@@ -86,7 +86,7 @@ class InnovationHubApp {
       this._animate();
     }
 
-    console.log('%c[InnovationHub] Rendszer online. Üdvözöljük a jövőben.', 'color: #bf5af2; font-weight: bold;');
+    console.log('%c[InnovationHub] Rendszer online. Üdvözöljük a jövőben.', 'color: #008C8C; font-weight: bold;');
   }
 
   _buildScene() {
@@ -119,9 +119,9 @@ class InnovationHubApp {
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
-    const purple = new THREE.Color(0xbf5af2);
-    const gold = new THREE.Color(0xffd700);
-    const magenta = new THREE.Color(0xff00aa);
+    const teal = new THREE.Color(0x008C8C);
+    const tealLight = new THREE.Color(0x00B3B3);
+    const tealBright = new THREE.Color(0x00D4D4);
     const white = new THREE.Color(0xe8eaf0);
 
     for (let i = 0; i < count; i++) {
@@ -132,7 +132,7 @@ class InnovationHubApp {
       alphas[i] = Math.random() * 0.25 + 0.05;
 
       const rnd = Math.random();
-      const c = rnd > 0.6 ? purple : rnd > 0.3 ? gold : rnd > 0.1 ? magenta : white;
+      const c = rnd > 0.6 ? teal : rnd > 0.3 ? tealLight : rnd > 0.1 ? tealBright : white;
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;

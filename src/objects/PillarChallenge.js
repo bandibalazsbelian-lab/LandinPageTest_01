@@ -40,8 +40,8 @@ export class PillarChallenge {
     const boltAlphas = new Float32Array(boltCount);
     const boltColors = new Float32Array(boltCount * 3);
 
-    const goldCore = new THREE.Color(0xffd700);
-    const orangeOuter = new THREE.Color(0xff8800);
+    const goldCore = new THREE.Color(0x00D4D4);
+    const orangeOuter = new THREE.Color(0x008C8C);
 
     // Store base positions for jitter animation
     this._boltBasePositions = new Float32Array(boltCount * 3);
@@ -168,8 +168,8 @@ export class PillarChallenge {
     const sparkAlphas = new Float32Array(sparkCount);
     const sparkColors = new Float32Array(sparkCount * 3);
 
-    const sparkGold = new THREE.Color(0xffd700);
-    const sparkGreen = new THREE.Color(0x00ff88);
+    const sparkGold = new THREE.Color(0x00D4D4);
+    const sparkGreen = new THREE.Color(0x00B3B3);
 
     this._sparkData = [];
 

@@ -23,8 +23,8 @@ export class PillarFuture {
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
-    const magenta = new THREE.Color(0xff00aa);
-    const cyan = new THREE.Color(0x00e5ff);
+    const magenta = new THREE.Color(0x00D4D4);
+    const cyan = new THREE.Color(0x008C8C);
 
     const jitter = () => (Math.random() - 0.5) * 0.04; // +/-0.02
 
@@ -152,8 +152,8 @@ export class PillarFuture {
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
-    const gold = new THREE.Color(0xffd700);
-    const magenta = new THREE.Color(0xff00aa);
+    const gold = new THREE.Color(0x00B3B3);
+    const magenta = new THREE.Color(0x00D4D4);
     const tmpColor = new THREE.Color();
 
     this._exhaustData = [];

@@ -18,9 +18,9 @@ export class SocialParticles {
     };
 
     const colors = {
-      twitch: { default: new THREE.Color(0x00ff88), hover: new THREE.Color(0x9146ff) },
-      discord: { default: new THREE.Color(0x00ff88), hover: new THREE.Color(0x5865f2) },
-      x: { default: new THREE.Color(0x00ff88), hover: new THREE.Color(0xe8eaf0) }
+      twitch: { default: new THREE.Color(0x008C8C), hover: new THREE.Color(0x00D4D4) },
+      discord: { default: new THREE.Color(0x008C8C), hover: new THREE.Color(0x00D4D4) },
+      x: { default: new THREE.Color(0x008C8C), hover: new THREE.Color(0x00D4D4) }
     };
 
     const spacing = 5;

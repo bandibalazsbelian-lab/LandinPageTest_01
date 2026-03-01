@@ -25,9 +25,9 @@ export class PillarCoLab {
     const JITTER = 0.02;
 
     // Colors
-    const shellColor = new THREE.Color('#00e5ff');
-    const liquidColor = new THREE.Color('#00ff88');
-    const bubbleColor = new THREE.Color('#44ffaa');
+    const shellColor = new THREE.Color('#008C8C');
+    const liquidColor = new THREE.Color('#00B3B3');
+    const bubbleColor = new THREE.Color('#00D4D4');
 
     // Allocate buffers
     const positions = new Float32Array(TOTAL * 3);

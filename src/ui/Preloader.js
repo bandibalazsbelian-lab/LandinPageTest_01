@@ -51,7 +51,7 @@ export class Preloader {
   async _typeLine(text, speed) {
     return new Promise(resolve => {
       const line = document.createElement('div');
-      line.style.color = '#bf5af2';
+      line.style.color = '#008C8C';
       this.bootLines.appendChild(line);
 
       let i = 0;

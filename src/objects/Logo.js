@@ -23,9 +23,9 @@ export class Logo {
         uTime: { value: 0 },
         uHover: { value: 0 },
         uMouse: { value: new THREE.Vector2(0, 0) },
-        uColor1: { value: new THREE.Color(0xbf5af2) },
-        uColor2: { value: new THREE.Color(0x8b3fcf) },
-        uCircuitColor: { value: new THREE.Color(0xffd700) }
+        uColor1: { value: new THREE.Color(0x008C8C) },
+        uColor2: { value: new THREE.Color(0x006B6B) },
+        uCircuitColor: { value: new THREE.Color(0x00D4D4) }
       },
       transparent: true,
       side: THREE.DoubleSide,
@@ -49,9 +49,9 @@ export class Logo {
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
-    const purple = new THREE.Color(0xbf5af2);
-    const gold = new THREE.Color(0xffd700);
-    const magenta = new THREE.Color(0xff00aa);
+    const teal = new THREE.Color(0x008C8C);
+    const tealLight = new THREE.Color(0x00B3B3);
+    const tealBright = new THREE.Color(0x00D4D4);
 
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2;
@@ -63,7 +63,7 @@ export class Logo {
       alphas[i] = Math.random() * 0.35 + 0.08;
 
       const rnd = Math.random();
-      const c = rnd > 0.55 ? purple : rnd > 0.2 ? gold : magenta;
+      const c = rnd > 0.55 ? teal : rnd > 0.2 ? tealLight : tealBright;
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
@@ -126,8 +126,8 @@ export class Logo {
     const alphas = new Float32Array(count);
     const colors = new Float32Array(count * 3);
 
-    const gold = new THREE.Color(0xffd700);
-    const purple = new THREE.Color(0xbf5af2);
+    const tealBright = new THREE.Color(0x00D4D4);
+    const teal = new THREE.Color(0x008C8C);
 
     this._circuitPaths = [];
 
@@ -146,7 +146,7 @@ export class Logo {
       sizes[i] = Math.random() * 2.5 + 1.0;
       alphas[i] = Math.random() * 0.6 + 0.2;
 
-      const c = Math.random() > 0.3 ? gold : purple;
+      const c = Math.random() > 0.3 ? tealBright : teal;
       colors[i * 3] = c.r;
       colors[i * 3 + 1] = c.g;
       colors[i * 3 + 2] = c.b;
