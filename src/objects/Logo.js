@@ -8,6 +8,8 @@ export class Logo {
     this.hover = 0;
     this.targetHover = 0;
     this.mouseNDC = new THREE.Vector2(0, 0);
+    this.spinSpeed = 0;          // current spin velocity (rad/s)
+    this.targetSpinSpeed = 0;    // target spin velocity
     this._build();
   }
 
@@ -219,6 +221,13 @@ export class Logo {
     const targetRotX = -this.mouseNDC.y * 0.05;
     this.group.rotation.y += (targetRotY - this.group.rotation.y) * 0.06;
     this.group.rotation.x += (targetRotX - this.group.rotation.x) * 0.06;
+
+    // Wheel-of-fortune spin on hover (spins left = negative Z rotation)
+    this.targetSpinSpeed = this.targetHover ? -1.8 : 0;
+    this.spinSpeed += (this.targetSpinSpeed - this.spinSpeed) * (this.targetHover ? 0.02 : 0.008);
+    if (Math.abs(this.spinSpeed) > 0.001) {
+      this.group.rotation.z += this.spinSpeed * delta;
+    }
 
     // Organic breathing (dual sine)
     const breathPhase = Math.sin(elapsed * 0.7) * 0.012 + Math.sin(elapsed * 1.1) * 0.006;
