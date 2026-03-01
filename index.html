@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InnovationHub — Where Ideas Become Reality</title>
+  <meta name="description" content="InnovationHub by Szerencsejáték Zrt. — A digital experience exploring innovation, collaboration, and the future." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/styles/global.css" />
+</head>
+<body>
+  <!-- Preloader -->
+  <div id="preloader">
+    <div class="boot-container">
+      <div class="boot-lines" id="boot-lines"></div>
+      <div class="boot-status">
+        <span id="boot-text">INITIALIZING INNOVATIONHUB...</span>
+        <span id="boot-cursor" class="blink">_</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="boot-percent" id="boot-percent">0%</div>
+    </div>
+  </div>
+
+  <!-- Sound Toggle -->
+  <button id="sound-toggle" class="sound-toggle" aria-label="Toggle sound">
+    <svg id="sound-on-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5">
+      <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+      <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.08"/>
+    </svg>
+    <svg id="sound-off-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5" style="display:none">
+      <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+      <line x1="23" y1="9" x2="17" y2="15"/>
+      <line x1="17" y1="9" x2="23" y2="15"/>
+    </svg>
+  </button>
+
+  <!-- Explorer Progress -->
+  <div id="explorer-progress" class="explorer-progress" style="opacity:0">
+    <div class="explorer-label">EXPLORER PROGRESS</div>
+    <div class="explorer-track">
+      <div class="explorer-fill" id="explorer-fill"></div>
+    </div>
+    <div class="explorer-badge" id="explorer-badge" style="display:none">FULL EXPLORER</div>
+  </div>
+
+  <!-- Custom Cursor -->
+  <div id="cursor-dot" class="cursor-dot"></div>
+  <div id="cursor-ring" class="cursor-ring"></div>
+
+  <!-- WebGL Canvas -->
+  <canvas id="webgl-canvas"></canvas>
+
+  <!-- Scroll Container - HTML overlay for text content & accessibility -->
+  <div id="scroll-container">
+    <!-- Section 0: Hero spacer -->
+    <section id="section-hero" class="section" data-section="0">
+      <div class="hero-content">
+        <div id="hero-title" class="hero-title">INNOVATION HUB</div>
+        <div id="hero-subtitle" class="hero-subtitle">Powered by Szerencsejáték Zrt.</div>
+        <div class="scroll-indicator" id="scroll-indicator">
+          <span>EXPLORE</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2">
+            <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 1: Mission -->
+    <section id="section-mission" class="section" data-section="1">
+      <div class="glass-panel mission-panel">
+        <h2 class="section-headline cyan-glow" id="mission-headline">WHERE IDEAS BECOME REALITY</h2>
+        <p class="section-body" id="mission-body">
+          InnovationHub is the creative engine of Szerencsejáték Zrt., where bold ideas are nurtured from spark to reality.
+          We bring together diverse minds, cutting-edge technology, and a fearless approach to reimagining what's possible
+          in entertainment, gaming, and beyond.
+        </p>
+      </div>
+    </section>
+
+    <!-- Section 2: Pillars -->
+    <section id="section-pillars" class="section" data-section="2">
+      <h2 class="section-headline green-glow pillars-title" id="pillars-headline">THE FOUR PILLARS</h2>
+      <div class="pillars-grid" id="pillars-grid">
+        <div class="pillar-card" data-pillar="colab">
+          <div class="pillar-3d-slot" id="pillar-slot-colab"></div>
+          <h3 class="pillar-name cyan-glow">CoLabMűhely</h3>
+          <p class="pillar-desc">Collaborative workshops where cross-functional teams solve tomorrow's challenges together.</p>
+          <div class="pillar-badge" id="badge-colab">EXPLORED</div>
+        </div>
+        <div class="pillar-card" data-pillar="challenge">
+          <div class="pillar-3d-slot" id="pillar-slot-challenge"></div>
+          <h3 class="pillar-name gold-glow">InnoChallenge</h3>
+          <p class="pillar-desc">Competitive innovation sprints that turn ambitious ideas into tangible prototypes.</p>
+          <div class="pillar-badge" id="badge-challenge">EXPLORED</div>
+        </div>
+        <div class="pillar-card" data-pillar="lab">
+          <div class="pillar-3d-slot" id="pillar-slot-lab"></div>
+          <h3 class="pillar-name green-glow">InnoLab</h3>
+          <p class="pillar-desc">Our experimental playground where emerging technologies are tested, broken, and perfected.</p>
+          <div class="pillar-badge" id="badge-lab">EXPLORED</div>
+        </div>
+        <div class="pillar-card" data-pillar="future">
+          <div class="pillar-3d-slot" id="pillar-slot-future"></div>
+          <h3 class="pillar-name magenta-glow">FutureWatch</h3>
+          <p class="pillar-desc">Scanning the horizon for trends, technologies, and opportunities that will shape our industry.</p>
+          <div class="pillar-badge" id="badge-future">EXPLORED</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Stats -->
+    <section id="section-stats" class="section" data-section="3">
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-hex" data-stat="ideas">
+          <div class="stat-number" id="stat-ideas">0</div>
+          <div class="stat-label">IDEAS SUBMITTED</div>
+        </div>
+        <div class="stat-hex" data-stat="challenges">
+          <div class="stat-number" id="stat-challenges">0</div>
+          <div class="stat-label">CHALLENGES COMPLETED</div>
+        </div>
+        <div class="stat-hex" data-stat="members">
+          <div class="stat-number" id="stat-members">0</div>
+          <div class="stat-label">TEAM MEMBERS ENGAGED</div>
+        </div>
+        <div class="stat-hex" data-stat="launched">
+          <div class="stat-number" id="stat-launched">0</div>
+          <div class="stat-label">INNOVATIONS LAUNCHED</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Social -->
+    <section id="section-social" class="section" data-section="4">
+      <h2 class="section-headline green-glow" id="social-headline">JOIN THE MOVEMENT</h2>
+      <div class="social-grid" id="social-grid">
+        <a href="https://twitch.tv" target="_blank" rel="noopener" class="social-link" data-platform="twitch">
+          <div class="social-3d-slot" id="social-slot-twitch"></div>
+          <span class="social-name" style="color:#9146ff">Twitch</span>
+        </a>
+        <a href="https://discord.gg" target="_blank" rel="noopener" class="social-link" data-platform="discord">
+          <div class="social-3d-slot" id="social-slot-discord"></div>
+          <span class="social-name" style="color:#5865f2">Discord</span>
+        </a>
+        <a href="https://x.com" target="_blank" rel="noopener" class="social-link" data-platform="x">
+          <div class="social-3d-slot" id="social-slot-x"></div>
+          <span class="social-name" style="color:#e8eaf0">X</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Section 5: Footer -->
+    <section id="section-footer" class="section section-footer" data-section="5">
+      <div class="footer-line"></div>
+      <div class="footer-content">
+        <div id="footer-logo-slot" class="footer-logo-slot"></div>
+        <p class="footer-text">&copy; 2025 InnovationHub — Szerencsejáték Zrt.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
