@@ -3,26 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>InnovationHub — Ahol az ötletek valósággá válnak</title>
-  <meta name="description" content="InnovationHub a Szerencsejáték Zrt. által — Digitális élmény az innováció, az együttműködés és a jövő felfedezéséhez." />
+  <title>InnovationHub — Kozmikus Showcase</title>
+  <meta name="description" content="InnovationHub a Szerencsejáték Zrt. által — Kozmikus digitális élmény az innováció, az együttműködés és a jövő felfedezéséhez." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
-  <script type="module" crossorigin src="/LandinPageTest_01/assets/index-DLsc94mI.js"></script>
-  <link rel="modulepreload" crossorigin href="/LandinPageTest_01/assets/three-CNZupvHv.js">
-  <link rel="modulepreload" crossorigin href="/LandinPageTest_01/assets/postprocessing-Db1LckNr.js">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script type="module" crossorigin src="/LandinPageTest_01/assets/index-DkH5IGeA.js"></script>
+  <link rel="modulepreload" crossorigin href="/LandinPageTest_01/assets/three-t_vIkZNL.js">
+  <link rel="modulepreload" crossorigin href="/LandinPageTest_01/assets/postprocessing-BINBnyxI.js">
   <link rel="modulepreload" crossorigin href="/LandinPageTest_01/assets/gsap-C8pce-KX.js">
-  <link rel="stylesheet" crossorigin href="/LandinPageTest_01/assets/index-yLDmJg9B.css">
+  <link rel="stylesheet" crossorigin href="/LandinPageTest_01/assets/index-9TnStQNq.css">
 </head>
 <body>
   <!-- Preloader -->
   <div id="preloader">
+    <canvas id="preloader-canvas"></canvas>
     <div class="boot-container">
       <div class="boot-lines" id="boot-lines"></div>
-      <div class="boot-status">
-        <span id="boot-text">INNOVATIONHUB INICIALIZÁLÁS...</span>
-        <span id="boot-cursor" class="blink">_</span>
-      </div>
       <div class="progress-track">
         <div class="progress-fill" id="progress-fill"></div>
       </div>
@@ -54,20 +51,20 @@
 
   <!-- Custom Cursor -->
   <div id="cursor-dot" class="cursor-dot"></div>
-  <div id="cursor-ring" class="cursor-ring"></div>
+  <div id="cursor-trail" class="cursor-trail-container"></div>
 
   <!-- WebGL Canvas -->
   <canvas id="webgl-canvas"></canvas>
 
-  <!-- Scroll Container - HTML overlay for text content & accessibility -->
+  <!-- Scroll Container -->
   <div id="scroll-container">
-    <!-- Section 0: Hero spacer -->
+    <!-- Section 0: Hero -->
     <section id="section-hero" class="section" data-section="0">
       <div class="hero-content">
-        <div id="hero-title" class="hero-title">INNOVATION HUB</div>
-        <div id="hero-subtitle" class="hero-subtitle">Powered by Szerencsejáték Zrt.</div>
+        <!-- Particle text "InnovationHub" is rendered in 3D scene, not duplicated here -->
+        <div id="hero-subtitle" class="hero-subtitle">Szerencsejáték Zrt. Innovációs Laborja</div>
         <div class="scroll-indicator" id="scroll-indicator">
-          <span>FELFEDEZÉS</span>
+          <span class="scroll-text">Görgess a felfedezéshez</span>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#008C8C" stroke-width="2" opacity="0.7">
             <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
           </svg>
@@ -78,7 +75,7 @@
     <!-- Section 1: Mission -->
     <section id="section-mission" class="section" data-section="1">
       <div class="mission-content">
-        <h2 class="section-headline mission-glow" id="mission-headline">AHOL AZ ÖTLETEK VALÓSÁGGÁ VÁLNAK</h2>
+        <h2 class="section-headline mission-glow" id="mission-headline">AHOL AZ ÖTLETEKBŐL VALÓSÁG LESZ</h2>
         <p class="section-body mission-body-glow" id="mission-body">
           Az InnovationHub a Szerencsejáték Zrt. kreatív motorja, ahol a merész ötletek a szikrától a megvalósulásig jutnak el.
           Sokszínű gondolkodókat, élvonalbeli technológiát és bátor megközelítést hozunk össze, hogy újragondoljuk
@@ -87,90 +84,73 @@
       </div>
     </section>
 
-    <!-- Section 2: Pillars -->
+    <!-- Section 2: Pillars (Asteroids in 3D scene) -->
     <section id="section-pillars" class="section" data-section="2">
       <h2 class="section-headline primary-glow pillars-title" id="pillars-headline">A NÉGY PILLÉR</h2>
-      <div class="pillars-grid" id="pillars-grid">
-        <div class="pillar-card" data-pillar="colab">
-          <div class="pillar-3d-slot" id="pillar-slot-colab"></div>
-          <h3 class="pillar-name pillar-cyan-glow">CoLabMűhely</h3>
-          <p class="pillar-desc">Együttműködő műhelyek, ahol a cross-funkcionális csapatok közösen oldják meg a holnap kihívásait.</p>
-          <div class="pillar-badge" id="badge-colab">FELFEDEZVE</div>
-        </div>
-        <div class="pillar-card" data-pillar="challenge">
-          <div class="pillar-3d-slot" id="pillar-slot-challenge"></div>
-          <h3 class="pillar-name pillar-gold-glow">InnoChallenge</h3>
-          <p class="pillar-desc">Versenyszerű innovációs sprintek, amelyek az ambiciózus ötleteket kézzelfogható prototípusokká alakítják.</p>
-          <div class="pillar-badge" id="badge-challenge">FELFEDEZVE</div>
-        </div>
-        <div class="pillar-card" data-pillar="lab">
-          <div class="pillar-3d-slot" id="pillar-slot-lab"></div>
-          <h3 class="pillar-name pillar-green-glow">InnoLab</h3>
-          <p class="pillar-desc">A kísérleti játszóterünk, ahol az új technológiákat teszteljük, fejlesztjük és tökéletesítjük.</p>
-          <div class="pillar-badge" id="badge-lab">FELFEDEZVE</div>
-        </div>
-        <div class="pillar-card" data-pillar="future">
-          <div class="pillar-3d-slot" id="pillar-slot-future"></div>
-          <h3 class="pillar-name pillar-magenta-glow">FutureWatch</h3>
-          <p class="pillar-desc">A horizont pásztázása trendek, technológiák és lehetőségek után, amelyek az iparágunkat formálják.</p>
-          <div class="pillar-badge" id="badge-future">FELFEDEZVE</div>
-        </div>
-      </div>
+      <div class="pillars-hint">Kattints az aszteroidákra a felfedezéshez</div>
     </section>
 
-    <!-- Section 3: Stats -->
+    <!-- Section 3: Stats — Sci-Fi HUD -->
     <section id="section-stats" class="section" data-section="3">
-      <div class="stats-grid" id="stats-grid">
-        <div class="stat-hex" data-stat="ideas">
-          <div class="stat-number" id="stat-ideas">0</div>
-          <div class="stat-label">BEKÜLDÖTT ÖTLET</div>
+      <div class="hud-frame" id="hud-frame">
+        <div class="hud-scanline"></div>
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-module" data-stat="ideas">
+            <div class="stat-icon stat-icon-lightning"></div>
+            <div class="stat-number" id="stat-ideas">0</div>
+            <div class="stat-label">BEKÜLDÖTT ÖTLET</div>
+          </div>
+          <div class="stat-module" data-stat="challenges">
+            <div class="stat-icon stat-icon-trophy"></div>
+            <div class="stat-number" id="stat-challenges">0</div>
+            <div class="stat-label">TELJESÍTETT KIHÍVÁS</div>
+          </div>
+          <div class="stat-module" data-stat="members">
+            <div class="stat-icon stat-icon-network"></div>
+            <div class="stat-number" id="stat-members">0</div>
+            <div class="stat-label">AKTÍV CSAPATTAG</div>
+          </div>
+          <div class="stat-module" data-stat="launched">
+            <div class="stat-icon stat-icon-rocket"></div>
+            <div class="stat-number" id="stat-launched">0</div>
+            <div class="stat-label">ELINDÍTOTT INNOVÁCIÓ</div>
+          </div>
         </div>
-        <div class="stat-hex" data-stat="challenges">
-          <div class="stat-number" id="stat-challenges">0</div>
-          <div class="stat-label">TELJESÍTETT KIHÍVÁS</div>
-        </div>
-        <div class="stat-hex" data-stat="members">
-          <div class="stat-number" id="stat-members">0</div>
-          <div class="stat-label">AKTÍV CSAPATTAG</div>
-        </div>
-        <div class="stat-hex" data-stat="launched">
-          <div class="stat-number" id="stat-launched">0</div>
-          <div class="stat-label">ELINDÍTOTT INNOVÁCIÓ</div>
+        <div class="hud-connectors">
+          <div class="hud-connector hud-connector-h"></div>
+          <div class="hud-connector hud-connector-v"></div>
         </div>
       </div>
     </section>
 
-    <!-- Section 4: Social -->
+    <!-- Section 4: Social (Satellites in 3D scene) -->
     <section id="section-social" class="section" data-section="4">
       <h2 class="section-headline coral-glow" id="social-headline">CSATLAKOZZ A MOZGALOMHOZ</h2>
-      <div class="social-grid" id="social-grid">
-        <a href="https://twitch.tv" target="_blank" rel="noopener" class="social-link" data-platform="twitch">
-          <div class="social-3d-slot" id="social-slot-twitch"></div>
-          <span class="social-name" style="color:#008C8C">Twitch</span>
-        </a>
-        <a href="https://discord.gg" target="_blank" rel="noopener" class="social-link" data-platform="discord">
-          <div class="social-3d-slot" id="social-slot-discord"></div>
-          <span class="social-name" style="color:#008C8C">Discord</span>
-        </a>
-        <a href="https://x.com" target="_blank" rel="noopener" class="social-link" data-platform="x">
-          <div class="social-3d-slot" id="social-slot-x"></div>
-          <span class="social-name" style="color:#008C8C">X</span>
-        </a>
-      </div>
+      <div class="social-hint">Kattints a műholdakra</div>
     </section>
 
-    <!-- Section 5: Footer -->
+    <!-- Section 5: Footer — Black Hole -->
     <section id="section-footer" class="section section-footer" data-section="5">
-      <div class="footer-line"></div>
       <div class="footer-content">
-        <div id="footer-logo-slot" class="footer-logo-slot"></div>
-        <p class="footer-text">&copy; 2025 InnovationHub — Szerencsejáték Zrt.</p>
+        <div class="footer-logo">InnovationHub</div>
+        <p class="footer-text">&copy; 2025 Szerencsejáték Zrt.</p>
+        <a href="#section-hero" id="back-to-top" class="back-to-top">Vissza a felszínre</a>
       </div>
     </section>
   </div>
 
   <!-- Toast container -->
   <div id="toast-container" class="toast-container"></div>
+
+  <!-- Asteroid panel overlay (for pillar content) -->
+  <div id="asteroid-panel" class="asteroid-panel" style="display:none">
+    <div class="asteroid-panel-inner">
+      <div class="asteroid-panel-icon" id="asteroid-panel-icon"></div>
+      <h3 class="asteroid-panel-title" id="asteroid-panel-title"></h3>
+      <p class="asteroid-panel-desc" id="asteroid-panel-desc"></p>
+      <div class="asteroid-panel-particles" id="asteroid-panel-particles"></div>
+    </div>
+  </div>
 
 </body>
 </html>
