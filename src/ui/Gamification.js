@@ -6,15 +6,14 @@ export class Gamification {
     this.explorerBadge = document.getElementById('explorer-badge');
     this.toastContainer = document.getElementById('toast-container');
 
-    // Tracking
     this.state = {
       sectionsVisited: new Set(),
       pillarsExplored: new Set(),
       socialHovered: new Set(),
+      easterEggs: new Set(),
       totalInteractions: 0
     };
 
-    // Load from session
     this._loadState();
   }
 
@@ -26,6 +25,7 @@ export class Gamification {
         this.state.sectionsVisited = new Set(data.sectionsVisited || []);
         this.state.pillarsExplored = new Set(data.pillarsExplored || []);
         this.state.socialHovered = new Set(data.socialHovered || []);
+        this.state.easterEggs = new Set(data.easterEggs || []);
         this.state.totalInteractions = data.totalInteractions || 0;
       }
     } catch (e) {}
@@ -38,6 +38,7 @@ export class Gamification {
         sectionsVisited: [...this.state.sectionsVisited],
         pillarsExplored: [...this.state.pillarsExplored],
         socialHovered: [...this.state.socialHovered],
+        easterEggs: [...this.state.easterEggs],
         totalInteractions: this.state.totalInteractions
       }));
     } catch (e) {}
@@ -57,11 +58,6 @@ export class Gamification {
       this.state.pillarsExplored.add(name);
       this.state.totalInteractions++;
 
-      // Show badge on pillar card
-      const badge = document.getElementById(`badge-${name}`);
-      if (badge) badge.classList.add('discovered');
-
-      // Toast
       const displayNames = {
         colab: 'CoLabMűhely',
         challenge: 'InnoChallenge',
@@ -69,10 +65,7 @@ export class Gamification {
         future: 'FutureWatch'
       };
       this.showToast(`${displayNames[name] || name} Felfedezve!`);
-
-      if (this.soundEngine) {
-        this.soundEngine.play('achievement_ding');
-      }
+      if (this.soundEngine) this.soundEngine.play('achievement_ding');
 
       this._updateProgress();
       this._saveState();
@@ -88,26 +81,32 @@ export class Gamification {
     }
   }
 
+  discoverEasterEgg(name, displayName) {
+    if (!this.state.easterEggs.has(name)) {
+      this.state.easterEggs.add(name);
+      this.state.totalInteractions++;
+      this.showToast(`🔭 Felfedezés: ${displayName}`);
+      if (this.soundEngine) this.soundEngine.play('achievement_ding');
+      this._updateProgress();
+      this._saveState();
+    }
+  }
+
   _updateProgress() {
-    // Calculate total progress
-    // 6 sections + 4 pillars + 3 social = 13 total checkpoints
-    const total = 6 + 4 + 3;
+    // 6 sections + 4 pillars + 3 social + 6 easter eggs = 19
+    const total = 6 + 4 + 3 + 6;
     const achieved = this.state.sectionsVisited.size +
                      this.state.pillarsExplored.size +
-                     this.state.socialHovered.size;
+                     this.state.socialHovered.size +
+                     this.state.easterEggs.size;
 
     const pct = Math.min((achieved / total) * 100, 100);
-
     if (this.explorerFill) {
       this.explorerFill.style.width = pct + '%';
     }
-
-    // Show badge at 100%
     if (pct >= 100 && this.explorerBadge) {
       this.explorerBadge.style.display = 'block';
-      if (this.soundEngine) {
-        this.soundEngine.play('achievement_ding');
-      }
+      if (this.soundEngine) this.soundEngine.play('achievement_ding');
     }
   }
 
@@ -117,16 +116,11 @@ export class Gamification {
     toast.className = 'toast';
     toast.textContent = message;
     this.toastContainer.appendChild(toast);
-
-    setTimeout(() => {
-      toast.remove();
-    }, 2200);
+    setTimeout(() => toast.remove(), 2500);
   }
 
   show() {
-    if (this.explorerProgress) {
-      this.explorerProgress.style.opacity = '1';
-    }
+    if (this.explorerProgress) this.explorerProgress.style.opacity = '1';
   }
 
   dispose() {}

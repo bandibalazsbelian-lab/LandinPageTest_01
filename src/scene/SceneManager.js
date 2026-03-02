@@ -21,7 +21,7 @@ export class SceneManager {
   _initRenderer() {
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
-      antialias: false, // handled by post-processing SMAA
+      antialias: false,
       alpha: false,
       powerPreference: 'high-performance',
       stencil: false
@@ -36,7 +36,7 @@ export class SceneManager {
 
   _initScene() {
     this.scene = new THREE.Scene();
-    this.scene.fog = new THREE.FogExp2(0x0A0A1A, 0.005);
+    this.scene.fog = new THREE.FogExp2(0x0A0A1A, 0.004);
   }
 
   _initCamera() {
@@ -46,60 +46,47 @@ export class SceneManager {
       0.1,
       1000
     );
-    this.camera.position.set(0, 0, 30);
-    this.cameraTarget = new THREE.Vector3(0, 0, 30);
+    this.camera.position.set(0, 0, 32);
+    this.cameraTarget = new THREE.Vector3(0, 0, 32);
   }
 
   _initPostProcessing() {
     try {
       this.composer = new EffectComposer(this.renderer);
-
-      // Render pass
       const renderPass = new RenderPass(this.scene, this.camera);
       this.composer.addPass(renderPass);
 
-      // Bloom — cranked up for neon glow
       this.bloomEffect = new BloomEffect({
-        intensity: 2.2,
-        luminanceThreshold: 0.12,
-        luminanceSmoothing: 0.85,
+        intensity: 2.0,
+        luminanceThreshold: 0.15,
+        luminanceSmoothing: 0.8,
         mipmapBlur: true
       });
 
-      // Chromatic Aberration
       this.chromaticAberration = new ChromaticAberrationEffect({
         offset: new THREE.Vector2(0.0008, 0.0008)
       });
       this.chromaticBaseOffset = 0.0008;
       this.chromaticTargetOffset = 0.0008;
 
-      // Vignette
       this.vignetteEffect = new VignetteEffect({
         offset: 0.3,
-        darkness: 0.6
+        darkness: 0.55
       });
 
-      // Film Grain / Noise
       this.noiseEffect = new NoiseEffect({
         blendFunction: BlendFunction.OVERLAY
       });
-      this.noiseEffect.blendMode.opacity.value = 0.12;
+      this.noiseEffect.blendMode.opacity.value = 0.08;
 
-      // Combine core effects (skip SMAA — it can crash on some GPUs)
-      const effects = [
-        this.bloomEffect,
-        this.chromaticAberration,
-        this.vignetteEffect,
-        this.noiseEffect
-      ];
-
-      const effectPass = new EffectPass(this.camera, ...effects);
+      const effectPass = new EffectPass(this.camera,
+        this.bloomEffect, this.chromaticAberration,
+        this.vignetteEffect, this.noiseEffect
+      );
       this.composer.addPass(effectPass);
-
       this.useComposer = true;
-      console.log('[SceneManager] Post-processing initialized');
     } catch (err) {
-      console.warn('[SceneManager] Post-processing failed, using fallback renderer:', err);
+      console.warn('[SceneManager] Post-processing failed:', err);
       this.useComposer = false;
     }
   }
@@ -108,17 +95,17 @@ export class SceneManager {
     const ambient = new THREE.AmbientLight(0x0A0A1A, 0.3);
     this.scene.add(ambient);
 
-    const pointLight1 = new THREE.PointLight(0x008C8C, 2, 100);
-    pointLight1.position.set(10, 10, 20);
-    this.scene.add(pointLight1);
+    const light1 = new THREE.PointLight(0x008C8C, 1.2, 100);
+    light1.position.set(8, 12, 22);
+    this.scene.add(light1);
 
-    const pointLight2 = new THREE.PointLight(0xD4A843, 1.5, 80);
-    pointLight2.position.set(-10, -5, 15);
-    this.scene.add(pointLight2);
+    const light2 = new THREE.PointLight(0xD4A843, 0.8, 80);
+    light2.position.set(-10, -6, 18);
+    this.scene.add(light2);
 
-    const pointLight3 = new THREE.PointLight(0xE8725A, 1, 60);
-    pointLight3.position.set(0, 5, 25);
-    this.scene.add(pointLight3);
+    const light3 = new THREE.PointLight(0xE8725A, 0.6, 60);
+    light3.position.set(2, 6, 28);
+    this.scene.add(light3);
   }
 
   _bindEvents() {
@@ -141,8 +128,7 @@ export class SceneManager {
     if (this.composer) this.composer.setSize(w, h);
   }
 
-  // Trigger a chromatic aberration burst
-  chromaticBurst(intensity = 0.012, duration = 500) {
+  chromaticBurst(intensity = 0.008, duration = 300) {
     if (!this.chromaticAberration) return;
     this.chromaticTargetOffset = intensity;
     setTimeout(() => {
@@ -150,37 +136,37 @@ export class SceneManager {
     }, duration * 0.3);
   }
 
-  // Update camera position based on scroll — cinematic zoom in/out per section
   setCameraForSection(sectionIndex, progress) {
-    // Dramatic camera choreography: alternating zoom-in / zoom-out / dolly / arc
     const sections = [
-      { pos: new THREE.Vector3(0, 0, 30),   fov: 60 },   // Hero — wide establishing shot
-      { pos: new THREE.Vector3(0, -2, 18),   fov: 50 },   // Mission — zoom IN tight
-      { pos: new THREE.Vector3(2, -5, 28),   fov: 65 },   // Pillars — pull OUT + pan right
-      { pos: new THREE.Vector3(-1, -8, 20),  fov: 48 },   // Stats — zoom IN close + pan left
-      { pos: new THREE.Vector3(0, -11, 26),  fov: 58 },   // Social — medium pull out
-      { pos: new THREE.Vector3(0, -14, 32),  fov: 62 }    // Footer — wide farewell
+      { pos: new THREE.Vector3(0, 0, 32),    fov: 60 },   // Hero
+      { pos: new THREE.Vector3(0, -3, 16),    fov: 48 },   // Mission
+      { pos: new THREE.Vector3(3, -7, 30),    fov: 68 },   // Pillars
+      { pos: new THREE.Vector3(-2, -11, 18),  fov: 45 },   // Stats
+      { pos: new THREE.Vector3(0, -15, 24),   fov: 55 },   // Social
+      { pos: new THREE.Vector3(0, -19, 35),   fov: 62 }    // Footer
     ];
 
     const current = sections[Math.min(sectionIndex, sections.length - 1)];
     const next = sections[Math.min(sectionIndex + 1, sections.length - 1)];
 
-    // Smooth ease curve for transitions (cubic ease in-out)
     const t = progress < 0.5
       ? 4 * progress * progress * progress
       : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
     this.cameraTarget.lerpVectors(current.pos, next.pos, t);
 
-    // Animate FOV for zoom effect
     const targetFov = current.fov + (next.fov - current.fov) * t;
     this.camera.fov += (targetFov - this.camera.fov) * 0.12;
     this.camera.updateProjectionMatrix();
   }
 
-  // Feed scroll velocity for reactive post-processing
   setScrollVelocity(vel) {
     this._scrollVelocity = vel;
+  }
+
+  // Track current section for vignette darkening at footer
+  setCurrentSection(index) {
+    this._currentSection = index;
   }
 
   update() {
@@ -188,17 +174,17 @@ export class SceneManager {
     const elapsed = this.clock.getElapsedTime();
     const scrollVel = this._scrollVelocity || 0;
 
-    // Smooth camera — slightly faster lerp for snappier feel
-    this.camera.position.lerp(this.cameraTarget, 0.065);
+    // Smooth camera with lerp
+    this.camera.position.lerp(this.cameraTarget, 0.055);
 
-    // Parallax camera sway from mouse (amplified)
+    // Parallax sway
     const swayX = this.mouseNDC.x * 0.5;
     const swayY = this.mouseNDC.y * 0.25;
     this.camera.position.x += (swayX + this.cameraTarget.x - this.camera.position.x) * 0.03;
     this.camera.position.y += (swayY + this.cameraTarget.y - this.camera.position.y) * 0.03;
 
-    // Subtle breathing on Z axis
-    this.camera.position.z += Math.sin(elapsed * 0.4) * 0.003;
+    // Z-axis breathing (4s cycle, ±0.3)
+    this.camera.position.z += Math.sin(elapsed * (Math.PI * 2 / 4)) * 0.003;
 
     this.camera.lookAt(
       this.cameraTarget.x * 0.7,
@@ -206,26 +192,34 @@ export class SceneManager {
       0
     );
 
-    // Dynamic vignette — tightens during scroll
+    // Dynamic vignette
     if (this.vignetteEffect) {
-      const targetDarkness = 0.6 + Math.min(scrollVel * 0.003, 0.25);
-      this.vignetteEffect.darkness += (targetDarkness - this.vignetteEffect.darkness) * 0.08;
+      // Footer section: darken to 0.9
+      const footerDarken = (this._currentSection === 5) ? 0.35 : 0;
+      const targetDarkness = 0.55 + Math.min(scrollVel * 0.003, 0.25) + footerDarken;
+      this.vignetteEffect.darkness += (targetDarkness - this.vignetteEffect.darkness) * 0.05;
     }
 
-    // Dynamic bloom — intensifies slightly during scroll
+    // Dynamic bloom
     if (this.bloomEffect) {
-      const targetBloom = 1.0 + Math.min(scrollVel * 0.005, 0.6);
+      const targetBloom = 2.0 + Math.min(scrollVel * 0.003, 0.4);
       this.bloomEffect.intensity += (targetBloom - this.bloomEffect.intensity) * 0.06;
     }
 
     // Smooth chromatic aberration
     if (this.chromaticAberration) {
-      // Scroll adds subtle chromatic push
-      const scrollChroma = Math.min(scrollVel * 0.00004, 0.006);
+      const scrollChroma = Math.min(scrollVel * 0.00003, 0.004);
       const target = this.chromaticTargetOffset + scrollChroma;
       const currentOffset = this.chromaticAberration.offset.x;
       const newOffset = currentOffset + (target - currentOffset) * 0.1;
       this.chromaticAberration.offset.set(newOffset, newOffset);
+    }
+
+    // Noise: spike on transitions
+    if (this.noiseEffect && this.noiseEffect.blendMode && this.noiseEffect.blendMode.opacity) {
+      const targetNoise = 0.08 + Math.min(scrollVel * 0.0005, 0.17);
+      this.noiseEffect.blendMode.opacity.value +=
+        (targetNoise - this.noiseEffect.blendMode.opacity.value) * 0.1;
     }
 
     // Render
@@ -238,11 +232,6 @@ export class SceneManager {
     return { delta, elapsed };
   }
 
-  add(object) {
-    this.scene.add(object);
-  }
-
-  remove(object) {
-    this.scene.remove(object);
-  }
+  add(object) { this.scene.add(object); }
+  remove(object) { this.scene.remove(object); }
 }
